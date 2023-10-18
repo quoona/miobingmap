@@ -129,26 +129,25 @@
             map.entities.push(polyline2);
             
             // Find the intersection point.
-            const intersectionPoint = getIntersectionPoint(polyline1, polyline2);
+            const { intersectionX, intersectionY } = getIntersectionPoint(polyline1, polyline2);
 
-            var location = map.tryPixelToLocation(intersectionPoint)
+            if (intersectionX) {
+                const location = new Microsoft.Maps.Location(intersectionY, intersectionX)
 
-            console.log(location)
+                pushpin1 = new Microsoft.Maps.Pushpin(location, {
+                    //icon: 'pin.png',
+                    //anchor: new Microsoft.Maps.Point(12, 39),
+                    color: 'red',
+                    //title: title,
+                    //subTitle: subTitle,
+                    title: "21 đường số 6",
+                    subTitle: "Tân hưng",
+                    //text: '1'
+                });
 
-            pushpin1 = new Microsoft.Maps.Pushpin(location, {
-                //icon: 'pin.png',
-                //anchor: new Microsoft.Maps.Point(12, 39),
-                color: 'red',
-                //title: title,
-                //subTitle: subTitle,
-                title: "21 đường số 6",
-                subTitle: "Tân hưng",
-                //text: '1'
-            });
-
-            //Add the pushpin1 to the map
-            map.entities.push(pushpin1);
-
+                //Add the pushpin1 to the map
+                map.entities.push(pushpin1);
+            }
         }
 
         function addPin(e, map) {
@@ -211,41 +210,34 @@
         }
 
         function getIntersectionPoint(line1, line2) {
-
-            console.log(line1);
-            console.log(line2);
-
             // Extract coordinates of the endpoints of the first line.
-            const x1 = line1.geometry.x[0];
-            const y1 = line1.geometry.y[0];
-            const x2 = line1.geometry.x[1];
-            const y2 = line1.geometry.y[1];
+            const fx1 = line1.geometry.x[0];
+            const fy1 = line1.geometry.y[0];
+            const fx2 = line1.geometry.x[1];
+            const fy2 = line1.geometry.y[1];
+            // getting function f1(x) = a1*x + b1
+            const a1 = (fy2 - fy1) / (fx2 - fx1);
+            const b1 = fy1 - (fx1 * a1);
 
             // Extract coordinates of the endpoints of the second line.
-            const x3 = line2.geometry.x[0];
-            const y3 = line2.geometry.y[0];
-            const x4 = line2.geometry.x[1];
-            const y4 = line2.geometry.y[1];
+            const dx1 = line2.geometry.x[0];
+            const dy1 = line2.geometry.y[0];
+            const dx2 = line2.geometry.x[1];
+            const dy2 = line2.geometry.y[1];
+            // getting function f2(x) = a2*x + b2
+            const a2 = (dy2 - dy1) / (dx2 - dx1);
+            const b2 = dy1 - (dx1 * a2);
 
-            // Calculate the denominator for the equations.
-            const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-
-            // Check if the lines are parallel (denominator is zero).
-            if (den === 0) {
-                return null; // No intersection, or the lines are coincident.
+            if (a1 === a2) {
+                // parallel (maybe duplicate if b1 === b2)
+                return null;
             }
+            
+            const intersectionX = (b2 - b1) / (a1 - a2);
+            const intersectionY = (a1 * intersectionX) + b1;
 
-            // Calculate the intersection point.
-            const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-            const intersectionX = x1 + t * (x2 - x1);
-            const intersectionY = y1 + t * (y2 - y1);
-
-            console.log(intersectionX)
-            console.log(intersectionY)
-
-            var point = new Microsoft.Maps.Point(intersectionX, intersectionY);
+            const point = { intersectionX, intersectionY };
             return point;
-            //return new Microsoft.Maps.Location(intersectionX, intersectionY);
         }
 
     </script>
