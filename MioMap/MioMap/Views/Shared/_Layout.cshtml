@@ -26,6 +26,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MioMap">Mio Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="WaterClocks" asp-action="Index">Water Clock Manage</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -45,202 +51,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     <!-- Reference to the Bing Maps SDK -->
     <script type='text/javascript'
             src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN&setLang=vn'
             async defer></script>
-
-    <script type='text/javascript'>
-        function GetMap() {
-            var map = new Microsoft.Maps.Map('#myMap', {
-                credentials: 'Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK',
-                center: new Microsoft.Maps.Location(10.742767792534757, 106.69918865817564),
-                mapTypeId: Microsoft.Maps.MapTypeId.road,
-                zoom: 18
-            });
-
-            //Add your post map load code here.
-
-            Microsoft.Maps.Events.addHandler(map, 'click', function (e) { addPin(e, map); });
-            //var layer = new Microsoft.Maps.Layer();
-            //layer.add(Microsoft.Maps.TestDataGenerator.getPolylines(5, map.getBounds()));
-
-            ////Add layer to map.
-            //map.layers.insert(layer);
-
-            ////Define the tile source for the USGS Topo layer.
-            //var usgsTopoTileSource = new Microsoft.Maps.TileSource({
-            //    uriConstructor: 'https://tiledbasemaps.arcgis.com/arcgis/rest/services/World_Street_Map/MapServer/tile',
-            //    minZoom: 1,
-            //    maxZoom: 15
-            //});
-
-            ////Create a tile layer from the tile source
-            //var usgsTopoTileLayer = new Microsoft.Maps.TileLayer({
-            //    mercator: usgsTopoTileSource
-            //});
-
-            ////Add tile layer to the map.
-            //map.layers.insert(usgsTopoTileLayer);
-
-            //var polyline = new Microsoft.Maps.Polyline([
-            //    new Microsoft.Maps.Location(47.60357, -122.32945),
-            //    new Microsoft.Maps.Location(47.61494, -122.19596),
-            //    new Microsoft.Maps.Location(47.54565, -122.04261)
-            //], {
-            //    strokeColor: 'red',
-            //    strokeThickness: 5
-            //});
-
-            //map.entities.push(polyline);
-
-            //Microsoft.Maps.Events.addHandler(polyline, 'mouseover', function (e) {
-            //    polyline.setOptions({
-            //        strokeColor: 'blue',
-            //        strokeThickness: 10
-            //    });
-            //});
-
-            //Microsoft.Maps.Events.addHandler(polyline, 'mouseout', function (e) {
-            //    polyline.setOptions({
-            //        strokeColor: 'red',
-            //        strokeThickness: 5
-            //    });
-            //});
-
-            var polyline1 = new Microsoft.Maps.Polyline([
-                new Microsoft.Maps.Location(10.742638694541522, 106.6991552602931),
-                new Microsoft.Maps.Location(10.743052612326316, 106.69921712976702)
-            ], {
-                strokeColor: 'red',
-                strokeThickness: 5
-            });
-
-            var polyline2 = new Microsoft.Maps.Polyline([
-                new Microsoft.Maps.Location(10.742770395718855, 106.69884738600928),
-                new Microsoft.Maps.Location(10.742631458212871, 106.69958098119665)
-            ], {
-                strokeColor: 'blue',
-                strokeThickness: 5
-            });
-
-            map.entities.push(polyline1);
-            map.entities.push(polyline2);
-            
-            // Find the intersection point.
-            const { intersectionX, intersectionY } = getIntersectionPoint(polyline1, polyline2);
-
-            if (intersectionX) {
-                const location = new Microsoft.Maps.Location(intersectionY, intersectionX)
-
-                pushpin1 = new Microsoft.Maps.Pushpin(location, {
-                    //icon: 'pin.png',
-                    //anchor: new Microsoft.Maps.Point(12, 39),
-                    color: 'red',
-                    //title: title,
-                    //subTitle: subTitle,
-                    title: "21 đường số 6",
-                    subTitle: "Tân hưng",
-                    //text: '1'
-                });
-
-                //Add the pushpin1 to the map
-                map.entities.push(pushpin1);
-            }
-        }
-
-        function addPin(e, map) {
-
-
-            //Create custom Pushpin
-            console.log(e)
-            var point = new Microsoft.Maps.Point(e.getX(), e.getY());
-            var loc = e.target.tryPixelToLocation(point);
-
-            //var title = prompt("Enter title for pushpin:");
-            //var subTitle = prompt("Enter subtitle for pushpin:");
-
-            pushpin = new Microsoft.Maps.Pushpin(loc, {
-                //icon: 'pin.png',
-                //anchor: new Microsoft.Maps.Point(12, 39),
-                color: 'red',
-                //title: title,
-                //subTitle: subTitle,
-                title: "21 đường số 6",
-                subTitle: "Tân hưng",
-                //text: '1'
-            });
-
-            //Add the pushpin to the map
-            map.entities.push(pushpin);
-            showInfoBox(map, loc);
-        }
-
-        function showInfoBox(map, loc) {
-            var infobox;
-            infobox = new Microsoft.Maps.Infobox(loc, {
-                title: 'Title',
-                description: 'Description',
-                visible: false,
-                //minHeight: 400,
-                //minWidth: 400,
-                actions: [{
-                    label: 'Handler1',
-                    eventHandler: function () {
-                        alert('Handler1');
-                    }
-                }, {
-                    label: 'Handler2',
-                    eventHandler: function () {
-                        alert('Handler2');
-                    }
-                }]
-            });
-
-            infobox.setMap(map);
-
-            Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
-                infobox.setOptions({
-                    visible: true,
-                    showCloseButton: true,
-                    offset: new Microsoft.Maps.Point(0, 25)
-                });
-            });
-        }
-
-        function getIntersectionPoint(line1, line2) {
-            // Extract coordinates of the endpoints of the first line.
-            const fx1 = line1.geometry.x[0];
-            const fy1 = line1.geometry.y[0];
-            const fx2 = line1.geometry.x[1];
-            const fy2 = line1.geometry.y[1];
-            // getting function f1(x) = a1*x + b1
-            const a1 = (fy2 - fy1) / (fx2 - fx1);
-            const b1 = fy1 - (fx1 * a1);
-
-            // Extract coordinates of the endpoints of the second line.
-            const dx1 = line2.geometry.x[0];
-            const dy1 = line2.geometry.y[0];
-            const dx2 = line2.geometry.x[1];
-            const dy2 = line2.geometry.y[1];
-            // getting function f2(x) = a2*x + b2
-            const a2 = (dy2 - dy1) / (dx2 - dx1);
-            const b2 = dy1 - (dx1 * a2);
-
-            if (a1 === a2) {
-                // parallel (maybe duplicate if b1 === b2)
-                return null;
-            }
-            
-            const intersectionX = (b2 - b1) / (a1 - a2);
-            const intersectionY = (a1 * intersectionX) + b1;
-
-            const point = { intersectionX, intersectionY };
-            return point;
-        }
-
-    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

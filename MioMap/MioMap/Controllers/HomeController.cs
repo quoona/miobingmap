@@ -18,6 +18,11 @@ namespace MioMap.Controllers
             return View();
         }
 
+        public IActionResult MioMap()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
