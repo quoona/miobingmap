@@ -685,37 +685,51 @@
 
     function addPinAndInfoBoxFromAction(lat, long, entity) {
         var infoboxTemplate = `<div class="map-info-container">
-                                              <div class="map-info-image">
-                                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img"/>
-                                              </div>
-                                              <div class="map-info-body">
-                                                <div class="map-info-header">
-                                                  <p class="title">{title}</h3>
-                                                  <p class="address">{address}</h3>
-                                                </div>
-                                                <div class="map-info-content">
-                                                  <div class="attribute">
-                                                    <span class="property">Tình trạng</span><span lass="value">{status}</span>
-                                                  </div>
-                                                  <div class="attribute">
-                                                     <span class="property">Trạng thái</span><span lass="value">{active}</span>
-                                                  </div>
-                                                  <div>
-                                                        <p>{description}</p>
-                                                  </div>
-                                                </div>
-                                                <div class="map-info-action">
-                                                  <button class="btn-direction">Chỉ đường</button>
-                                                  <button class="btn-other">Action khác</button>
-                                                  <button class="btn-other" onclick="closeInfobox()">Đóng</button>
-                                                </div>
-                                              </div>
-                                            </div>`;
+                                                              <div class="map-info-image">
+                                                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img"/>
+                                                              </div>
+                                                              <div class="map-info-body">
+                                                                <div class="map-info-header">
+                                                                  <p class="title">{title}</h3>
+                                                                  <p class="address">{address}</h3>
+                                                                </div>
+                                                                <div class="map-info-content">
+                                                                  <div class="attribute">
+                                                                    <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                                                  </div>
+                                                                  <div class="attribute">
+                                                                     <span class="property">Trạng thái</span><span lass="value">{active}</span>
+                                                                  </div>
+                                                                  <div>
+                                                                        <p>{description}</p>
+                                                                  </div>
+                                                                </div>
+                                                                <div class="map-info-action">
+                                                                  <button class="btn-direction">Chỉ đường</button>
+                                                                  <button class="btn-other">Action khác</button>
+                                                                  <button class="btn-other" onclick="closeInfobox()">Đóng</button>
+                                                                </div>
+                                                              </div>
+                                                            </div>`;
 
         var closeButton = '<a href="javascript:closeInfobox()" class="customInfoboxCloseButton">X</a>';
 
         // var infobox;
+        //var loc = new Microsoft.Maps.Location(lat, long)
+        //var pushpin = new Microsoft.Maps.Pushpin(loc, {
+        //    color: entity?.color,
+        //    title: entity?.name,
+        //    description: entity?.description,
+        //});
+
+        //map.entities.push(pushpin);
+
+        const _activeDisplay = entity?.isActive ? "Đang mở" : "Đang đóng"
+
+
+        console.log("infobox: ", infobox)
         var loc = new Microsoft.Maps.Location(lat, long)
+
         var pushpin = new Microsoft.Maps.Pushpin(loc, {
             color: entity?.color,
             title: entity?.name,
@@ -723,23 +737,20 @@
         });
 
         map.entities.push(pushpin);
-
-        const _activeDisplay = entity?.isActive ? "Đang mở" : "Đang đóng"
-
-        infobox = new Microsoft.Maps.Infobox(loc, {
-            htmlContent: infoboxTemplate
-                .replace('{title}', entity?.name)
-                .replace('{address}', entity?.address)
-                .replace('{status}', entity?.status)
-                .replace('{active}', _activeDisplay)
-                .replace('{description}', entity?.description)
-        });
-
-
-        Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', function (e) { pushpinHovered(e, infobox, infoBoxTitle) });
-        Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', closeTooltip);
-
         Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
+
+            Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', function (e) { pushpinHovered(e, infobox, "Test") });
+            Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', closeTooltip);
+
+            infobox = new Microsoft.Maps.Infobox(loc, {
+                htmlContent: infoboxTemplate
+                    .replace('{title}', entity?.name)
+                    .replace('{address}', entity?.address)
+                    .replace('{status}', entity?.status)
+                    .replace('{active}', _activeDisplay)
+                    .replace('{description}', entity?.description)
+            });
+
             closeTooltip();
             infobox.setMap(map);
             infobox.setOptions({
