@@ -13,11 +13,11 @@
     }
 
     /*      #myMap {
-                                     position: relative;
-                                     width: calc(100% - 380px);
-                                     height: 100%;
-                                     float: left;
-                                 } */
+                                         position: relative;
+                                         width: calc(100% - 380px);
+                                         height: 100%;
+                                         float: left;
+                                     } */
 
     /* MAP INFO BOX */
 
@@ -154,10 +154,10 @@
     var map, tooltip, highlightLayer, dataLayer, directionsManager;
     var tooltipTemplate = '<div style="background-color:white;height:100px;width:150px;padding:5px;text-align:center; border-radius: 15px; padding:10px"><b>{title}</b></div>';
 
+    const tempInfoBox = []
+
     // URL NÀY KHÔNG BIẾT LẤY TỪ ĐÂU: ĐANG LẤY CỦA DOCS ĐỂ DEMO
     var sdsDataSourceUrl = 'https://spatial.virtualearth.net/REST/v1/data/20181f26d9e94c81acdf9496133d4f23/FourthCoffeeSample/FourthCoffeeShops';
-
-    const apiEndpoitGetAddressByCoor = 'http://dev.virtualearth.net/REST/v1/Locations/${}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN'
 
     // INIT DATA
     const polylineData = [
@@ -675,7 +675,11 @@
         //Assign the infobox to a map instance.
         infobox.setMap(map);
 
+        resetDirectionPanel()
 
+    }
+
+    function resetDirectionPanel() {
         Microsoft.Maps.loadModule(['Microsoft.Maps.Directions', 'Microsoft.Maps.SpatialDataService'], function () {
             //Create an instance of the directions manager.
             directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
@@ -781,40 +785,38 @@
         var infobox;
 
         var infoboxTemplate = `
-                                                        <div class="map-info-container">
-                                                  <div class="map-info-image">
-                                                    <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
-                                                  </div>
-                                                  <div class="map-info-body">
-                                                    <div class="map-info-header">
-                                                      <p class="title">{title}</h3>
-                                                      <p class="address">{address}</h3>
-                                                    </div>
-                                                    <div class="map-info-content">
-                                                      <div class="attribute">
-                                                        <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                                            <div class="map-info-container">
+                                                      <div class="map-info-image">
+                                                        <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
                                                       </div>
-                                                      <div class="attribute">
-                                                        <span class="property">Trạng thái</span><span lass="value">{active}</span>
-                                                      </div>
-                                                      <div>
-                                                        <p>{description}</p>
+                                                      <div class="map-info-body">
+                                                        <div class="map-info-header">
+                                                          <p class="title">{title}</h3>
+                                                          <p class="address">{address}</h3>
+                                                        </div>
+                                                        <div class="map-info-content">
+                                                          <div class="attribute">
+                                                            <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                                          </div>
+                                                          <div class="attribute">
+                                                            <span class="property">Trạng thái</span><span lass="value">{active}</span>
+                                                          </div>
+                                                          <div>
+                                                            <p>{description}</p>
+                                                          </div>
+                                                        </div>
+                                                        <div class="map-info-action">
+                                                                      <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
+                                                          <button class="btn-light" id="close-btn-${lat}">Đóng</button>
+                                                        </div>
                                                       </div>
                                                     </div>
-                                                    <div class="map-info-action">
-                                                                  <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
-                                                      <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                    `;
+                                                        `;
 
         var loc = new Microsoft.Maps.Location(lat, long)
-
         var pushpin = new Microsoft.Maps.Pushpin(loc, {
             color: 'red',
-            title: metadata?.name,
-            // subTitle: metadata?.,
+            title: metadata?.name
         });
 
         //console.log(pushpin)
@@ -841,6 +843,8 @@
 
         infobox.setMap(map);
 
+        tempInfoBox.push(infobox)
+
         Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', function (e) {
             // Hightlight
             pushpinHovered(e, infobox, infoBoxTitle, metadata)
@@ -852,7 +856,6 @@
         });
 
         Microsoft.Maps.Events.addHandler(infobox, 'click', function (e) {
-            infobox.setOptions({ visible: true });
             if (e.originalEvent.target.id === `close-btn-${lat}`) {
                 infobox.setOptions({ visible: false });
             }
@@ -860,6 +863,11 @@
 
         Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
             closeTooltip();
+
+            for (let item of tempInfoBox) {
+                item.setOptions({ visible: false });
+            }
+
             infobox.setOptions({
                 visible: true,
                 showCloseButton: true,
@@ -884,11 +892,32 @@
     function getDirection(address) {
         console.log("address", address)
 
+        
+        const elementFrom = document.querySelector('input[title="From"][data-tag="watermarkInput"]');
+        const elementTo = document.querySelector('input[title="To"][data-tag="watermarkInput"]');
+        const elementGo = document.querySelector('a[role="button"][data-tag="dirBtnGo"]');
 
+        console.log("elementFrom", elementFrom)
+        console.log("elementTo", elementTo)
+
+        elementFrom.setAttribute("value", "10.742767792534757, 106.69918865817564");
+        elementTo.setAttribute("value", address);
+
+        elementFrom.value = "10.742767792534757, 106.69918865817564"
+        elementTo.value = address
+
+        elementGo.click()
+
+        return;
         navigator.geolocation.getCurrentPosition(async function (position) {
-            console.log("position", position.coords)
+            // console.log("position", position.coords)
             directionsManager.clearAll();
+            resetDirectionPanel()
             const { latitude, longitude } = position.coords
+
+
+            
+
             // var loc = new Microsoft.Maps.Location(
             //     position.coords.latitude,
             //     position.coords.longitude);
@@ -901,18 +930,16 @@
             // map.setView({ center: loc, zoom: 15 });
 
 
-            const apiEndpoitGetAddressByCoor = `http:dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN`
+            // const apiEndpoitGetAddressByCoor = `http:dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN`
 
-            const response = await fetch(apiEndpoitGetAddressByCoor);
-            const currentLocation = await response.json();
+            // const response = await fetch(apiEndpoitGetAddressByCoor);
+            // const currentLocation = await response.json();
 
-            const currentAddress = currentLocation?.resourceSets[0]?.resources[0]?.name
+            // const currentAddress = currentLocation?.resourceSets[0]?.resources[0]?.name
 
 
             Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
                 //Create an instance of the directions manager.
-
-                console.log("Did y run here!?")
 
                 directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
 
@@ -939,21 +966,20 @@
                         strokeColor: 'green',
                         strokeThickness: 6
                     },
-                    waypointPushpinOptions: {
-                        title: 'Hehe'
-                    }
+                    // waypointPushpinOptions: {
+                    //     title: 'Hehe'
+                    // }
                 });
 
                 //Calculate directions.
                 directionsManager.calculateDirections();
-                // Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
+                Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
             });
 
-            console.log(currentLocation);
+
+           
+            // console.log(currentLocation);
         });
-
-
-
     }
 
     function pushpinHovered(e, infobox, infoboxTitle, metadata) {
