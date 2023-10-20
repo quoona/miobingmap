@@ -28,6 +28,11 @@ namespace MioMap.Controllers
             return View();
         }
 
+        public IActionResult TestBingMap()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

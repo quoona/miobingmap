@@ -1,0 +1,163 @@
+﻿
+<style>
+    .map-info-container {
+        background: white;
+        width: 350px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .map-info-image {
+        width: 100%;
+    }
+
+        .map-info-image img {
+            width: inherit;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0
+        }
+
+    .map-info-header {
+        margin: 10px 0;
+    }
+
+        .map-info-header p {
+            padding: 0;
+            margin: 0;
+            color: #312e81;
+            font-weight: bold;
+        }
+
+        .map-info-header .title {
+            font-size: 24px;
+        }
+
+        .map-info-header .address {
+            font-size: 16px;
+        }
+
+    .map-info-content .attribute {
+        display: flex;
+        gap: 20px;
+    }
+
+        .map-info-content .attribute .property {
+            font-weight: bold;
+        }
+
+    .map-info-action {
+        display: flex;
+        gap: 10px;
+        justify-content: end;
+    }
+
+        .map-info-action button {
+            cursor: pointer;
+            border: 0;
+            padding: 10px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            display: block;
+            text-decoration: none;
+            text-align: center;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+        }
+
+            .map-info-action button:hover {
+                opacity: .9;
+                -webkit-transition: background-color 1s ease-in;
+                -moz-transition: background-color 1s ease-in;
+                -o-transition: background-color 1s ease-in;
+                transition: background-color 1s ease-in;
+            }
+
+
+    /* Control the colour scheme */
+
+    .btn-direction {
+        color: #FFF;
+        background: #1e40af;
+        -webkit-box-shadow: 0 3px 1px #1e40af;
+        -moz-box-shadow: 0 3px 1px #1e40af;
+        box-shadow: 0 3px 1px #1e40af;
+    }
+
+    .btn-other {
+        color: #FFF;
+        background: #fb7185;
+        -webkit-box-shadow: 0 3px 1px #fb7185;
+        -moz-box-shadow: 0 3px 1px #fb7185;
+        box-shadow: 0 3px 1px #fb7185;
+    }
+</style>
+
+<div id="myMap" style="width:100%;height:80vh"></div>
+
+
+<script type='text/javascript'>
+    var map, highlightLayer;
+
+    function GetMap() {
+        map = new Microsoft.Maps.Map('#myMap', {});
+
+        //Load the Spatial Math modules.
+        Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
+            //Create a random polyline, that has 5 locations and is half the size of the map view.
+            var line = Microsoft.Maps.TestDataGenerator.getPolylines(1, map.getBounds(), 5, 0.5, { strokeColor: 'blue', strokeThickness: 3 });
+            map.entities.push(line);
+
+            //Add a click event to the polyline.
+            Microsoft.Maps.Events.addHandler(line, 'click', lineClicked);
+
+            //create a layer to display the highlight line segment
+            highlightLayer = new Microsoft.Maps.Layer();
+            map.layers.insert(highlightLayer);
+        });
+    }
+
+    function lineClicked(e) {
+        highlightLayer.clear();
+
+        var clickLocation = e.location;
+        console.log("e", e)
+        console.log("clickLocation", clickLocation)
+        var line = e.target;
+        console.log("line", line)
+        var lineSegment = getLineSegment(clickLocation, line);
+        console.log("lineSegment", lineSegment)
+
+        if (lineSegment) {
+            //Create a polyline to highlight the line segement.
+            highlightLayer.add(lineSegment.path);
+        }
+    }
+
+    function getLineSegment(loc, line) {
+        var locs = line.getLocations();
+        console.log("locs", locs)
+        var minDistance = Number.MAX_VALUE;
+        var lineSegment = null;
+
+        //Loop through each pair of locations in the polyine and calculate the distance from the clicked location.
+        for (var i = 0, len = locs.length - 1; i < len; i++) {
+            var path = new Microsoft.Maps.Polyline([locs[i], locs[i + 1]], { strokeColor: 'red', strokeThickness: 3 });
+
+            var d = Microsoft.Maps.SpatialMath.Geometry.distance(loc, path);
+
+            if (d < minDistance) {
+                minDistance = d;
+                lineSegment = {
+                    startIdx: i,
+                    endIdx: i + 1,
+                    path: path
+                };
+            }
+        }
+
+        return lineSegment;
+    }
+</script>
