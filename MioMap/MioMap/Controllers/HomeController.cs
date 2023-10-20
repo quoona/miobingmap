@@ -23,6 +23,11 @@ namespace MioMap.Controllers
             return View();
         }
 
+        public IActionResult MioSearchMap()
+        {
+            return View();
+        }
+
         public IActionResult DemoMap()
         {
             return View();

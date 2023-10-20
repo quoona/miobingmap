@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MioMap.Models;
-using System.Diagnostics;
 
 namespace MioMap
 {
@@ -13,5 +12,7 @@ namespace MioMap
         }
 
         public DbSet<WaterClock> WaterClocks { get; set; }
+
+        public DbSet<MioMap.Models.WaterPipline> WaterPiplines { get; set; } = default!;
     }
 }
