@@ -1,0 +1,905 @@
+﻿
+<style>
+
+
+    .map-info-container {
+        background: white;
+        width: 350px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .map-info-image {
+        width: 100%;
+    }
+
+        .map-info-image img {
+            width: inherit;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0
+        }
+
+    .map-info-header {
+        margin: 10px 0;
+    }
+
+        .map-info-header p {
+            padding: 0;
+            margin: 0;
+            color: #312e81;
+            font-weight: bold;
+        }
+
+        .map-info-header .title {
+            font-size: 24px;
+        }
+
+        .map-info-header .address {
+            font-size: 16px;
+        }
+
+    .map-info-content .attribute {
+        display: flex;
+        gap: 20px;
+    }
+
+        .map-info-content .attribute .property {
+            font-weight: bold;
+        }
+
+    .map-info-action {
+        display: flex;
+        gap: 10px;
+        justify-content: end;
+    }
+
+        .map-info-action button {
+            cursor: pointer;
+            border: 0;
+            padding: 10px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            display: block;
+            text-decoration: none;
+            text-align: center;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+        }
+
+            .map-info-action button:hover {
+                opacity: .9;
+                -webkit-transition: background-color 1s ease-in;
+                -moz-transition: background-color 1s ease-in;
+                -o-transition: background-color 1s ease-in;
+                transition: background-color 1s ease-in;
+            }
+
+
+    /* Control the colour scheme */
+
+    .btn-direction {
+        color: #FFF;
+        background: #1e40af;
+        -webkit-box-shadow: 0 3px 1px #1e40af;
+        -moz-box-shadow: 0 3px 1px #1e40af;
+        box-shadow: 0 3px 1px #1e40af;
+    }
+
+    .btn-other {
+        color: #FFF;
+        background: #fb7185;
+        -webkit-box-shadow: 0 3px 1px #fb7185;
+        -moz-box-shadow: 0 3px 1px #fb7185;
+        box-shadow: 0 3px 1px #fb7185;
+    }
+</style>
+
+<div style="display:flex">
+    <div id="myMap" style="width:70%;height:80vh"></div>
+    <div style="width:30%">
+        <input id="searchKeyword" type="text" minlength="3" />
+        <button id="searchBtn">Tìm kiếm</button>
+        <div id="searchResult">
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type='text/javascript'>
+    var map = null;
+    var tooltip = null;
+    var tooltipTemplate = '<div style="background-color:white;height:100px;width:150px;padding:5px;text-align:center; border-radius: 15px; padding:10px"><b>{title}</b></div>';
+
+
+
+    function GetMap() {
+
+        map = new Microsoft.Maps.Map('#myMap', {
+            credentials: 'Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK',
+            center: new Microsoft.Maps.Location(10.742767792534757, 106.69918865817564),
+            mapTypeId: Microsoft.Maps.MapTypeId.road,
+            zoom: 18
+        });
+
+
+
+        // const polylines = [
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.742932117315206, 106.69775635856169),
+        //         new Microsoft.Maps.Location(10.742716145233672, 106.6990009035446),
+        //         new Microsoft.Maps.Location(10.742289468228435, 106.69887215751189),
+        //         new Microsoft.Maps.Location(10.742041889936672, 106.70016498225706),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.742932117315206, 106.69775635856169),
+        //         new Microsoft.Maps.Location(10.742473834909632, 106.6976678456642),
+        //         new Microsoft.Maps.Location(10.742318440142938, 106.69871122497099),
+        //         new Microsoft.Maps.Location(10.741878593505504, 106.69863612311858),
+        //         new Microsoft.Maps.Location(10.741393293609661, 106.69854492801207),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.741393293609661, 106.69854492801207),
+        //         new Microsoft.Maps.Location(10.741300648101344, 106.69896067040938),
+        //         new Microsoft.Maps.Location(10.741100477779, 106.69998527425307),
+        //         new Microsoft.Maps.Location(10.74102146314155, 106.70036614793318),
+        //         new Microsoft.Maps.Location(10.740952983772374, 106.70042515653151),
+        //         new Microsoft.Maps.Location(10.740594783742182, 106.70038224118727),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.741350474803696, 106.69877023356932),
+        //         new Microsoft.Maps.Location(10.740860584123823, 106.69868440288084),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.742485710506685, 106.69767452729853),
+        //         new Microsoft.Maps.Location(10.742022159797969, 106.69759942544611),
+        //         new Microsoft.Maps.Location(10.74155334074392, 106.69750823033961),
+        //         new Microsoft.Maps.Location(10.741068718035507, 106.69742776406916),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.74186279062036, 106.69858784335631),
+        //         new Microsoft.Maps.Location(10.742305271091226, 106.69605583804625),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        //     new Microsoft.Maps.Polyline([
+        //         new Microsoft.Maps.Location(10.74141259067531, 106.69852883475798),
+        //         new Microsoft.Maps.Location(10.741802395514696, 106.69608802455443),
+        //     ], {
+        //         strokeColor: 'blue',
+        //         strokeThickness: 4
+        //     }),
+        // ]
+
+        // polylines?.forEach(pol => {
+        //     map.entities.push(pol);
+        // })
+
+        // const pointData = [
+        //     {
+        //         geometry: {
+        //             lat: 10.742932117315178, x
+        //             long: 106.69775233524817, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742724046654033, x
+        //             long: 106.69899017470854, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742302637280815, x
+        //             long: 106.6988748397209, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742157777672958, x
+        //             long: 106.69957221406477, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742476468718522, x
+        //             long: 106.69765979903715, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742318440142924, x
+        //             long: 106.69870854276198, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742318440142924, x
+        //             long: 106.69870854276198, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.74187332587718, x
+        //             long: 106.69858073902762, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741636282509404, x
+        //             long: 106.69857537460959, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741404506592133, x
+        //             long: 106.69855123472846, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741349196403746, x
+        //             long: 106.69876849365866, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742043384190637, x
+        //             long: 106.69760086278184, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741577198986306, x
+        //             long: 106.69750698546632, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741798439511982, x
+        //             long: 106.69607867268783, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741051001401715, x
+        //             long: 106.70032366726005, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.740948282352164, x
+        //             long: 106.70041620347106, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.741496690216891, x
+        //             long: 106.69802820397055, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        //     {
+        //         geometry: {
+        //             lat: 10.742226256768973, x
+        //             long: 106.69660837310332, y
+        //         },
+        //         options: {
+        //             color: 'red',
+        //         },
+        //         metadata: {
+        //             color: 'red',
+        //             name: "Van số 001",
+        //             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //             status: 'Ổn định',
+        //             isActive: true,
+        //         }
+        //     },
+        // ]
+
+        // pointData?.forEach(point => {
+        //     const loc = new Microsoft.Maps.Location(point.geometry.lat, point.geometry.long)
+        //     const options = point?.options
+
+        //     console.log("options", options)
+
+        //     const pushpin = new Microsoft.Maps.Pushpin(loc, options);
+        //     pushpin.metadata = point?.metadata;
+
+        //     const { metadata, geometry } = point;
+
+        //     addPinAndInfoBoxFromAction(map, geometry.lat, geometry.long, metadata.name, metadata.description, metadata.name, metadata.description)
+
+        // })
+
+
+        $(document).ready(() => {
+            $.ajax({
+                //data: formData,
+                type: "GET",
+                url: '@Url.Action("GetWaterClockAsJson", "WaterClocks")',
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    //console.log(res)
+                    res.forEach(item =>
+                        addPinAndInfoBoxFromAction(map, item.lat, item.long, item.title, item.description, item.infoBoxTitle, item.infoBoxDescription))
+                }
+            });
+
+            $.ajax({
+                //data: formData,
+                type: "GET",
+                url: '@Url.Action("GetWaterPiplinesAsJson", "WaterPiplines")',
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    res.forEach(item => {
+                        map.entities.push(createPolyline(item));
+                    });
+                }
+            });
+
+            $('#searchBtn').on('click', () => {
+                const keyword = $('#searchKeyword').val();
+                const searchResultDiv = $('#searchResult');
+                $.ajax({
+                    //data: formData,
+                    type: "GET",
+                    url: `@Url.Action("GetWaterPiplinesAsJson", "WaterPiplines")?keyword=${keyword}`,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        searchResultDiv.html();
+                        res.forEach(item => {
+                            searchResultDiv.append(`
+                                <div 
+                                    onclick="handleClickSearchItem(${item.lat1}, ${item.long1}, ${item.lat2}, ${item.long2})"
+                                    style="cursor: pointer; margin: 10px 0; border: 1px solid red; padding: 4px"
+                                >
+                                    ${item.title}
+                                </div>
+                            `);
+                        });
+                        
+                    }
+                });
+            });
+        });
+    
+    }
+    //function GetMap() {
+    //    var map = new Microsoft.Maps.Map('#myMap', {
+    //        credentials: 'Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK',
+    //        center: new Microsoft.Maps.Location(10.742767792534757, 106.69918865817564),
+    //        mapTypeId: Microsoft.Maps.MapTypeId.road,
+    //        zoom: 18
+    //    });
+
+    //    //Add your post map load code here.
+
+    //    //Microsoft.Maps.Events.addHandler(map, 'click', function (e) { addPin(e, map); });
+    //    //var layer = new Microsoft.Maps.Layer();
+    //    //layer.add(Microsoft.Maps.TestDataGenerator.getPolylines(5, map.getBounds()));
+
+    //    ////Add layer to map.
+    //    //map.layers.insert(layer);
+
+    //    ////Define the tile source for the USGS Topo layer.
+    //    //var usgsTopoTileSource = new Microsoft.Maps.TileSource({
+    //    //    uriConstructor: 'https://tiledbasemaps.arcgis.com/arcgis/rest/services/World_Street_Map/MapServer/tile',
+    //    //    minZoom: 1,
+    //    //    maxZoom: 15
+    //    //});
+
+    //    ////Create a tile layer from the tile source
+    //    //var usgsTopoTileLayer = new Microsoft.Maps.TileLayer({
+    //    //    mercator: usgsTopoTileSource
+    //    //});
+
+    //    ////Add tile layer to the map.
+    //    //map.layers.insert(usgsTopoTileLayer);
+
+    //    //var polyline = new Microsoft.Maps.Polyline([
+    //    //    new Microsoft.Maps.Location(47.60357, -122.32945),
+    //    //    new Microsoft.Maps.Location(47.61494, -122.19596),
+    //    //    new Microsoft.Maps.Location(47.54565, -122.04261)
+    //    //], {
+    //    //    strokeColor: 'red',
+    //    //    strokeThickness: 5
+    //    //});
+
+    //    //map.entities.push(polyline);
+
+    //    //Microsoft.Maps.Events.addHandler(polyline, 'mouseover', function (e) {
+    //    //    polyline.setOptions({
+    //    //        strokeColor: 'blue',
+    //    //        strokeThickness: 10
+    //    //    });
+    //    //});
+
+    //    //Microsoft.Maps.Events.addHandler(polyline, 'mouseout', function (e) {
+    //    //    polyline.setOptions({
+    //    //        strokeColor: 'red',
+    //    //        strokeThickness: 5
+    //    //    });
+    //    //});
+
+    //    //var polyline1 = new Microsoft.Maps.Polyline([
+    //    //    new Microsoft.Maps.Location(10.742638694541522, 106.6991552602931),
+    //    //    new Microsoft.Maps.Location(10.743052612326316, 106.69921712976702)
+    //    //], {
+    //    //    strokeColor: 'red',
+    //    //    strokeThickness: 5
+    //    //});
+
+    //    //var polyline2 = new Microsoft.Maps.Polyline([
+    //    //    new Microsoft.Maps.Location(10.742770395718855, 106.69884738600928),
+    //    //    new Microsoft.Maps.Location(10.742631458212871, 106.69958098119665)
+    //    //], {
+    //    //    strokeColor: 'blue',
+    //    //    strokeThickness: 5
+    //    //});
+
+    //    //map.entities.push(polyline1);
+    //    //map.entities.push(polyline2);
+
+    //    //// Find the intersection point.
+    //    //const { intersectionX, intersectionY } = getIntersectionPoint(polyline1, polyline2);
+
+    //    //if (intersectionX) {
+    //    //    const location = new Microsoft.Maps.Location(intersectionY, intersectionX)
+
+    //    //    pushpin1 = new Microsoft.Maps.Pushpin(location, {
+    //    //        //icon: 'pin.png',
+    //    //        //anchor: new Microsoft.Maps.Point(12, 39),
+    //    //        color: 'red',
+    //    //        //title: title,
+    //    //        //subTitle: subTitle,
+    //    //        title: "21 đường số 6",
+    //    //        subTitle: "Tân hưng",
+    //    //        //text: '1'
+    //    //    });
+
+    //    //    //Add the pushpin1 to the map
+    //    //    map.entities.push(pushpin1);
+    //    //}
+    //}
+
+    function addPin(e, map) {
+        //Create custom Pushpin
+        console.log(e)
+        var point = new Microsoft.Maps.Point(e.getX(), e.getY());
+        var loc = e.target.tryPixelToLocation(point);
+
+        //var title = prompt("Enter title for pushpin:");
+        //var subTitle = prompt("Enter subtitle for pushpin:");
+
+        pushpin = new Microsoft.Maps.Pushpin(loc, {
+            //icon: 'pin.png',
+            //anchor: new Microsoft.Maps.Point(12, 39),
+            color: 'red',
+            //title: title,
+            //subTitle: subTitle,
+            title: "21 đường số 6",
+            subTitle: "Tân hưng",
+            //text: '1'
+        });
+
+        //Add the pushpin to the map
+        map.entities.push(pushpin);
+        showInfoBox(map, loc);
+    }
+
+    function showInfoBox(map, loc) {
+        var infobox;
+        infobox = new Microsoft.Maps.Infobox(loc, {
+            title: 'Title',
+            description: 'Description',
+            visible: false,
+            //minHeight: 400,
+            //minWidth: 400,
+            actions: [{
+                label: 'Handler1',
+                eventHandler: function () {
+                    alert('Handler1');
+                }
+            }, {
+                label: 'Handler2',
+                eventHandler: function () {
+                    alert('Handler2');
+                }
+            }]
+        });
+
+        infobox.setMap(map);
+
+        Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
+            infobox.setOptions({
+                visible: true,
+                showCloseButton: true,
+                offset: new Microsoft.Maps.Point(0, 25)
+            });
+        });
+    }
+
+    function getIntersectionPoint(line1, line2) {
+        // Extract coordinates of the endpoints of the first line.
+        const fx1 = line1.geometry.x[0];
+        const fy1 = line1.geometry.y[0];
+        const fx2 = line1.geometry.x[1];
+        const fy2 = line1.geometry.y[1];
+        // getting function f1(x) = a1*x + b1
+        const a1 = (fy2 - fy1) / (fx2 - fx1);
+        const b1 = fy1 - (fx1 * a1);
+
+        // Extract coordinates of the endpoints of the second line.
+        const dx1 = line2.geometry.x[0];
+        const dy1 = line2.geometry.y[0];
+        const dx2 = line2.geometry.x[1];
+        const dy2 = line2.geometry.y[1];
+        // getting function f2(x) = a2*x + b2
+        const a2 = (dy2 - dy1) / (dx2 - dx1);
+        const b2 = dy1 - (dx1 * a2);
+
+        if (a1 === a2) {
+            // parallel (maybe duplicate if b1 === b2)
+            return null;
+        }
+
+        const intersectionX = (b2 - b1) / (a1 - a2);
+        const intersectionY = (a1 * intersectionX) + b1;
+
+        const point = { intersectionX, intersectionY };
+        return point;
+    }
+
+    function addPinAndInfoBoxFromAction(map, lat, long, title, description, infoBoxTitle, infoBoxDescription) {
+        var infobox;
+
+        var infoboxTemplate = 
+        `<div class="map-info-container">
+            <div class="map-info-image">
+                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img"/>
+            </div>
+            <div class="map-info-body">
+                <div class="map-info-header">
+                    <p class="title">{title}</h3>
+                    <p class="address">{address}</h3>
+                </div>
+                <div class="map-info-content">
+                    <div class="attribute">
+                        <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                    </div>
+                    <div class="attribute">
+                        <span class="property">Trạng thái</span><span lass="value">{active}</span>
+                    </div>
+                    <div>
+                        <p>{description}</p>
+                    </div>
+                </div>
+                <div class="map-info-action">
+                    <button class="btn-direction">Chỉ đường</button>
+                    <button class="btn-other">Action khác</button>
+                    <button class="btn-other" id="close-btn-${lat}">Đóng</button>
+                </div>
+            </div>
+        </div>`;
+
+        var loc = new Microsoft.Maps.Location(lat, long)
+
+       var pushpin  = new Microsoft.Maps.Pushpin(loc, {
+            //icon: 'pin.png',
+            //anchor: new Microsoft.Maps.Point(12, 39),
+            color: 'red',
+            //title: title,
+            //subTitle: subTitle,
+            title: title,
+            subTitle: description,
+            //text: '1'
+        });
+
+        //console.log(pushpin)
+
+        //Add the pushpin to the map
+        map.entities.push(pushpin);
+
+        infobox = new Microsoft.Maps.Infobox(loc,
+            {
+            //title: infoBoxTitle,
+            //description: infoBoxDescription,
+            visible: false,
+                htmlContent: infoboxTemplate
+                    .replace('{title}', infoBoxTitle)
+                    .replace('{address}', "")
+                    .replace('{status}', "")
+                    .replace('{active}', "")
+                    .replace('{description}', infoBoxDescription)
+        }
+        );
+
+        infobox.setMap(map);
+
+        Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', function (e) { pushpinHovered(e, infobox, infoBoxTitle) });
+        Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', closeTooltip);
+
+        Microsoft.Maps.Events.addHandler(infobox, 'click', function (e) {
+            if (e.originalEvent.target.id === `close-btn-${lat}`) {
+                infobox.setOptions({ visible: false });
+            }
+        });
+
+        Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
+            closeTooltip();
+            infobox.setOptions({
+                visible: true,
+                showCloseButton: true,
+                offset: new Microsoft.Maps.Point(0, 25)
+            });
+        });
+
+
+        tooltip = new Microsoft.Maps.Infobox(loc, {
+            visible: false,
+            showPointer: false,
+            showCloseButton: false,
+            offset: new Microsoft.Maps.Point(0, 25)
+        });
+
+        tooltip.setMap(map);
+    }
+
+    function pushpinHovered(e, infobox, infoboxTitle) {
+        //Hide the infobox
+        infobox.setOptions({ visible: false });
+        tooltip.setOptions({
+            location: e.target.getLocation(),
+            htmlContent: tooltipTemplate.replace('{title}', infoboxTitle),
+            visible: true
+        });
+    }
+
+    function closeTooltip() {
+        //Close the tooltip.
+        tooltip.setOptions({
+            visible: false
+        });
+    }
+
+    function createPolyline (polylineData) {
+        const { lat1, long1, lat2, long2, title, description, infoBoxTitle, infoBoxDescription, tags } = polylineData
+
+        const polyline = new Microsoft.Maps.Polyline([
+            new Microsoft.Maps.Location(lat1, long1),
+            new Microsoft.Maps.Location(lat2, long2),
+        ], {
+            strokeColor: 'blue',
+            strokeThickness: 4,
+            visible: true
+        });
+        polyline.metadata = tags;
+        return polyline;
+    };
+
+    function handleClickSearchItem(lat1, long1, lat2, long2) {
+        const lat = (lat1 + lat2) / 2;
+        const long = (long1 + long2) / 2;
+        map.setView({
+            // mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+            center: new Microsoft.Maps.Location(lat, long),
+            zoom: 18
+        });
+    };
+
+</script>
