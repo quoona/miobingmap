@@ -1,4 +1,27 @@
 ﻿<style>
+    .directionsContainer {
+        padding: 0 20px;
+        background: white;
+        position: absolute;
+        z-index: 999999;
+        width: 380px;
+        height: 100%;
+        overflow-y: auto;
+        /* transform: translateX(-100%);  */
+        /* opacity: 0; */
+        float: left;
+    }
+
+    /*      #myMap {
+                                 position: relative;
+                                 width: calc(100% - 380px);
+                                 height: 100%;
+                                 float: left;
+                             } */
+
+    /* MAP INFO BOX */
+
+
     .map-info-container {
         background: white;
         width: 350px;
@@ -94,15 +117,47 @@
     }
 </style>
 
+@* <div>
+    <nav class="nav-main">
+        <label>
+            <label for="find-direction" class="label-direction">Chỉ đường</label>
+            <input type="checkbox" id="find-direction" />
+            <ul class="direction-panel">
+                <li><a><i class="fa fa-times pointer"></i></a></li>
+                <label for="find-direction" class="label-direction">DDosng</label>
+                <div class="directionsContainer">
+                    <div id="directionsPanel"></div>
+                    <div id="directionsItinerary"></div>
+                </div>
+            </ul>
+        </label>
+    </nav>
+    <section>
+        <div class="directionsContainer">
+            <div id="directionsPanel"></div>
+            <div id="directionsItinerary"></div>
+        </div>
+        <div id="myMap" style="width:100%;height:80vh"></div>
+    </section>
+    <footer></footer>
+</div>
+ *@
 
+
+<div class="directionsContainer">
+    <div id="directionsPanel"></div>
+    <div id="directionsItinerary"></div>
+</div>
 <div id="myMap" style="width:100%;height:80vh"></div>
 
-
 <script type='text/javascript'>
-    var map = null;
-    var tooltip = null;
-    var highlightLayer;
+    var map, tooltip, highlightLayer, dataLayer, directionsManager;
     var tooltipTemplate = '<div style="background-color:white;height:100px;width:150px;padding:5px;text-align:center; border-radius: 15px; padding:10px"><b>{title}</b></div>';
+
+    // URL NÀY KHÔNG BIẾT LẤY TỪ ĐÂU: ĐANG LẤY CỦA DOCS ĐỂ DEMO
+    var sdsDataSourceUrl = 'https://spatial.virtualearth.net/REST/v1/data/20181f26d9e94c81acdf9496133d4f23/FourthCoffeeSample/FourthCoffeeShops';
+
+    const apiEndpoitGetAddressByCoor = 'http://dev.virtualearth.net/REST/v1/Locations/${}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN'
 
     // INIT DATA
     const polylineData = [
@@ -402,7 +457,7 @@
                 description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
                 status: 'Ổn định',
                 isActive: true,
-                polylineIds: [2,3]
+                polylineIds: [2, 3]
             }
         },
         {
@@ -488,7 +543,7 @@
             metadata: {
                 color: 'red',
                 name: "Van số 014",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+                address: '645 Đ. Nguyễn Hữu Thọ, Tân Phong, Quận 7, Thành phố Hồ Chí Minh, Vietnam',
                 description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
                 status: 'Ổn định',
                 isActive: true,
@@ -560,6 +615,8 @@
             zoom: 18
         });
 
+
+      
         // RENDER POLYLINES - PIPELINE
         Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
             polylineData?.map(pol => {
@@ -617,6 +674,71 @@
                 }
             });
         })
+
+
+        //Create a layer for rendering the data that is along a route.
+        dataLayer = new Microsoft.Maps.Layer();
+
+        //Add the layer to the map.
+        map.layers.insert(dataLayer);
+
+        //Add click event to shapes in the data layer.
+        Microsoft.Maps.Events.addHandler(dataLayer, 'click', shapeClicked);
+
+        //Create an infobox at the center of the map but don't show it.
+        infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+            visible: false
+        });
+
+        //Assign the infobox to a map instance.
+        infobox.setMap(map);
+
+
+        Microsoft.Maps.loadModule(['Microsoft.Maps.Directions', 'Microsoft.Maps.SpatialDataService'], function () {
+            //Create an instance of the directions manager.
+            directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+
+            //Specify where to display the route instructions.
+            directionsManager.setRenderOptions({ itineraryContainer: '#directionsItinerary' });
+
+            //Specify the where to display the input panel
+            directionsManager.showInputPanel('directionsPanel');
+
+            //Add event handler to directions manager.
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
+        });
+
+
+        Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+            //Create an instance of the directions manager.
+            directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+
+            //Create waypoints to route between.
+            directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: '21 Đ. số 6, Tân Hưng, Quận 7, Thành phố Hồ Chí Minh, Vietnam' }));
+            directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: 'Số 56 Đ. Số 10, Khu dân cư Him Lam, Quận 7, Thành phố Hồ Chí Minh, Vietnam' }));
+
+            //Set the request options that avoid highways and uses kilometers.
+            directionsManager.setRequestOptions({
+                distanceUnit: Microsoft.Maps.Directions.DistanceUnit.km,
+                routeAvoidance: [Microsoft.Maps.Directions.RouteAvoidance.avoidLimitedAccessHighway]
+            });
+
+            //Make the route line thick and green. Replace the title of waypoints with an empty string to hide the default text that appears.
+            directionsManager.setRenderOptions({
+                drivingPolylineOptions: {
+                    strokeColor: 'green',
+                    strokeThickness: 6
+                },
+                waypointPushpinOptions: {
+                    title: ''
+                }
+            });
+
+            //Calculate directions.
+            directionsManager.calculateDirections();
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
+        });
+
     }
 
     function addPin(e, map) {
@@ -709,33 +831,33 @@
         var infobox;
 
         var infoboxTemplate = `
-                        <div class="map-info-container">
-                  <div class="map-info-image">
-                    <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
-                  </div>
-                  <div class="map-info-body">
-                    <div class="map-info-header">
-                      <p class="title">{title}</h3>
-                      <p class="address">{address}</h3>
-                    </div>
-                    <div class="map-info-content">
-                      <div class="attribute">
-                        <span class="property">Tình trạng</span><span lass="value">{status}</span>
-                      </div>
-                      <div class="attribute">
-                        <span class="property">Trạng thái</span><span lass="value">{active}</span>
-                      </div>
-                      <div>
-                        <p>{description}</p>
-                      </div>
-                    </div>
-                    <div class="map-info-action">
-                      <button class="btn-blue">Chỉ đường</button>
-                      <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-                    </div>
-                  </div>
-                </div>
-                    `;
+                                                    <div class="map-info-container">
+                                              <div class="map-info-image">
+                                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
+                                              </div>
+                                              <div class="map-info-body">
+                                                <div class="map-info-header">
+                                                  <p class="title">{title}</h3>
+                                                  <p class="address">{address}</h3>
+                                                </div>
+                                                <div class="map-info-content">
+                                                  <div class="attribute">
+                                                    <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                                  </div>
+                                                  <div class="attribute">
+                                                    <span class="property">Trạng thái</span><span lass="value">{active}</span>
+                                                  </div>
+                                                  <div>
+                                                    <p>{description}</p>
+                                                  </div>
+                                                </div>
+                                                <div class="map-info-action">
+                                                      <button class="btn-blue" onclick="getDirection('${metadata?.address}')">Chỉ đường</button>
+                                                  <button class="btn-light" id="close-btn-${lat}">Đóng</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                                `;
 
         var loc = new Microsoft.Maps.Location(lat, long)
 
@@ -803,6 +925,76 @@
         });
 
         tooltip.setMap(map);
+
+        // GET DIRECTION
+
+    }
+
+    function getDirection(address) {
+        console.log("address", address)
+
+
+        navigator.geolocation.getCurrentPosition(async function (position) {
+            console.log("position", position.coords)
+            const { latitude, longitude } = position.coords
+            // var loc = new Microsoft.Maps.Location(
+            //     position.coords.latitude,
+            //     position.coords.longitude);
+
+            // //Add a pushpin at the user's location.
+            // var pin = new Microsoft.Maps.Pushpin(loc);
+            // map.entities.push(pin);
+
+            // //Center the map on the user's location.
+            // map.setView({ center: loc, zoom: 15 });
+
+
+            const apiEndpoitGetAddressByCoor = `http:dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN`
+
+            const response = await fetch(apiEndpoitGetAddressByCoor);
+            const currentLocation = await response.json();
+
+            const currentAddress = currentLocation?.resourceSets[0]?.resources[0]?.name
+
+
+            Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
+                //Create an instance of the directions manager.
+
+                console.log("Did y run here!?")
+
+                directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+
+                //Create waypoints to route between.
+                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: currentAddress }));
+                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: address }));
+
+                //Set the request options that avoid highways and uses kilometers.
+                directionsManager.setRequestOptions({
+                    distanceUnit: Microsoft.Maps.Directions.DistanceUnit.km,
+                    routeAvoidance: [Microsoft.Maps.Directions.RouteAvoidance.avoidLimitedAccessHighway]
+                });
+
+                //Make the route line thick and green. Replace the title of waypoints with an empty string to hide the default text that appears.
+                directionsManager.setRenderOptions({
+                    drivingPolylineOptions: {
+                        strokeColor: 'green',
+                        strokeThickness: 6
+                    },
+                    waypointPushpinOptions: {
+                        title: 'Hehe'
+                    }
+                });
+
+                //Calculate directions.
+                directionsManager.calculateDirections();
+                // Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
+            });
+
+            console.log(currentLocation);
+        });
+
+
+
     }
 
     function pushpinHovered(e, infobox, infoboxTitle, metadata) {
@@ -877,5 +1069,82 @@
         }
 
         return lineSegment;
+    }
+
+    // Find Route
+    function directionsUpdated(e) {
+        dataLayer.clear();
+
+        //Get the current route.
+        var currentRoute = directionsManager.getCurrentRoute();
+
+        if (!currentRoute) {
+            alert('No route found.');
+            return;
+        }
+
+        var routeRequest = directionsManager.getRequestOptions();
+
+        //Get the route mode.
+        var routeMode = getRouteMode(routeRequest);
+
+        if (!routeMode) {
+            alert('Transit mode is not supported for near route queries.');
+            return;
+        }
+
+        //Create a query to get data that is near a route.
+        var queryOptions = {
+            // queryUrl: sdsDataSourceUrl,
+            // spatialfilter: {
+            //     spatialfiltertype: 'nearroute',
+            //     start: "21 đường số 6",
+            //     end: "71 xuân hồng",
+            //     travelmode: routemode,
+            //     optimize: getrouteoptimization(routerequest)
+            // }
+        };
+
+        //Process the query.
+        Microsoft.Maps.SpatialDataService.QueryAPIManager.search(queryOptions, map, function (data) {
+            //Add results to the map.
+            dataLayer.add(data);
+        });
+    }
+
+    function getRouteMode(routeRequest) {
+        switch (routeRequest.routeMode) {
+            case Microsoft.Maps.Directions.RouteMode.driving:
+                return 'Driving';
+            case Microsoft.Maps.Directions.RouteMode.walking:
+                return 'Walking';
+        }
+
+        return null;
+    }
+
+    function getRouteOptimization(routeRequest) {
+        switch (routeRequest.routeOptimize) {
+            case Microsoft.Maps.Directions.RouteOptimization.timeWithTraffic:
+                return 'timeWithTraffic';
+            case Microsoft.Maps.Directions.RouteOptimization.shortestDistance:
+                return 'distance';
+            case Microsoft.Maps.Directions.RouteOptimization.shortestTime:
+            default:
+                return 'time';
+        }
+    }
+
+    function shapeClicked(e) {
+        //Make sure the infobox has metadata to display.
+        if (e.primitive.metadata) {
+            //Set the infobox options with the metadata of the pushpin.
+            infobox.setOptions({
+                location: e.primitive.getLocation(),
+                title: e.primitive.metadata.Name,
+                description: 'Store Type: ' + e.primitive.metadata.StoreType,
+                visible: true
+            });
+        }
     }
 </script>
