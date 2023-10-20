@@ -97,7 +97,7 @@
     }
 </style>
 
-
+<div id="layerList"></div>
 <div id="myMap" style="width:100%;height:80vh"></div>
 
 
@@ -117,7 +117,13 @@
             zoom: 18
         });
 
-        
+
+        //Create an array of pushpins.
+        var pushpins = [
+            new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(10.741439648607841, 106.69693560264388)),
+            new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(10.739605535482317, 106.700551220369)),
+            new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(10.741270994975327, 106.69595927858265))
+        ];
 
         const polylines = [
             new Microsoft.Maps.Polyline([
@@ -126,7 +132,7 @@
                 new Microsoft.Maps.Location(10.742289468228435, 106.69887215751189),
                 new Microsoft.Maps.Location(10.742041889936672, 106.70016498225706),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
@@ -136,7 +142,7 @@
                 new Microsoft.Maps.Location(10.741878593505504, 106.69863612311858),
                 new Microsoft.Maps.Location(10.741393293609661, 106.69854492801207),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
@@ -147,14 +153,14 @@
                 new Microsoft.Maps.Location(10.740952983772374, 106.70042515653151),
                 new Microsoft.Maps.Location(10.740594783742182, 106.70038224118727),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
                 new Microsoft.Maps.Location(10.741350474803696, 106.69877023356932),
                 new Microsoft.Maps.Location(10.740860584123823, 106.69868440288084),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
@@ -163,352 +169,432 @@
                 new Microsoft.Maps.Location(10.74155334074392, 106.69750823033961),
                 new Microsoft.Maps.Location(10.741068718035507, 106.69742776406916),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
                 new Microsoft.Maps.Location(10.74186279062036, 106.69858784335631),
                 new Microsoft.Maps.Location(10.742305271091226, 106.69605583804625),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
             new Microsoft.Maps.Polyline([
                 new Microsoft.Maps.Location(10.74141259067531, 106.69852883475798),
                 new Microsoft.Maps.Location(10.741802395514696, 106.69608802455443),
             ], {
-                strokeColor: 'blue',
+                strokeColor: 'green',
                 strokeThickness: 4
             }),
         ]
 
-        polylines?.forEach(pol => {
-            map.entities.push(pol);
-        })
+        //Create a new layer.
+        var layer = new Microsoft.Maps.Layer("PushPin Layer");
 
-        const pointData = [
-            {
-                geometry: {
-                    lat: 10.742932117315178, // x
-                    long: 106.69775233524817, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742724046654033, // x
-                    long: 106.69899017470854, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742302637280815, // x
-                    long: 106.6988748397209, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742157777672958, // x
-                    long: 106.69957221406477, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742476468718522, // x
-                    long: 106.69765979903715, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742318440142924, // x
-                    long: 106.69870854276198, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742318440142924, // x
-                    long: 106.69870854276198, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.74187332587718, // x
-                    long: 106.69858073902762, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741636282509404, // x
-                    long: 106.69857537460959, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741404506592133, // x
-                    long: 106.69855123472846, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741349196403746, // x
-                    long: 106.69876849365866, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742043384190637, // x
-                    long: 106.69760086278184, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741577198986306, // x
-                    long: 106.69750698546632, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741798439511982, // x
-                    long: 106.69607867268783, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741051001401715, // x
-                    long: 106.70032366726005, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.740948282352164, // x
-                    long: 106.70041620347106, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.741496690216891, // x
-                    long: 106.69802820397055, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-            {
-                geometry: {
-                    lat: 10.742226256768973, // x
-                    long: 106.69660837310332, // y
-                },
-                options: {
-                    // color: 'red',
-                },
-                metadata: {
-                    color: 'red',
-                    name: "Van số 001",
-                    address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                    status: 'Ổn định',
-                    isActive: true,
-                }
-            },
-        ]
+        var layer1 = new Microsoft.Maps.Layer("Polyline Layer");
 
-        pointData?.forEach(point => {
-            const loc = new Microsoft.Maps.Location(point.geometry.lat, point.geometry.long)
-            const options = point?.options
+        //Add the pushpins to the layer.
+        layer.add(pushpins);
 
-            //console.log("options", options)
+        //Add the polyline to the layer.
+        layer1.add(polylines);
 
-            const pushpin = new Microsoft.Maps.Pushpin(loc, options);
-            pushpin.metadata = point?.metadata;
+        //Insert the layer into the map.
+        map.layers.insert(layer);
 
-            const { metadata, geometry } = point;
+        map.layers.insert(layer1);
 
-            addPinAndInfoBoxFromAction(map, geometry.lat, geometry.long, metadata.name, metadata.description, metadata.name, metadata.description)
 
-        })
+        //const polylines = [
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.742932117315206, 106.69775635856169),
+        //        new Microsoft.Maps.Location(10.742716145233672, 106.6990009035446),
+        //        new Microsoft.Maps.Location(10.742289468228435, 106.69887215751189),
+        //        new Microsoft.Maps.Location(10.742041889936672, 106.70016498225706),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.742932117315206, 106.69775635856169),
+        //        new Microsoft.Maps.Location(10.742473834909632, 106.6976678456642),
+        //        new Microsoft.Maps.Location(10.742318440142938, 106.69871122497099),
+        //        new Microsoft.Maps.Location(10.741878593505504, 106.69863612311858),
+        //        new Microsoft.Maps.Location(10.741393293609661, 106.69854492801207),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.741393293609661, 106.69854492801207),
+        //        new Microsoft.Maps.Location(10.741300648101344, 106.69896067040938),
+        //        new Microsoft.Maps.Location(10.741100477779, 106.69998527425307),
+        //        new Microsoft.Maps.Location(10.74102146314155, 106.70036614793318),
+        //        new Microsoft.Maps.Location(10.740952983772374, 106.70042515653151),
+        //        new Microsoft.Maps.Location(10.740594783742182, 106.70038224118727),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.741350474803696, 106.69877023356932),
+        //        new Microsoft.Maps.Location(10.740860584123823, 106.69868440288084),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.742485710506685, 106.69767452729853),
+        //        new Microsoft.Maps.Location(10.742022159797969, 106.69759942544611),
+        //        new Microsoft.Maps.Location(10.74155334074392, 106.69750823033961),
+        //        new Microsoft.Maps.Location(10.741068718035507, 106.69742776406916),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.74186279062036, 106.69858784335631),
+        //        new Microsoft.Maps.Location(10.742305271091226, 106.69605583804625),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //    new Microsoft.Maps.Polyline([
+        //        new Microsoft.Maps.Location(10.74141259067531, 106.69852883475798),
+        //        new Microsoft.Maps.Location(10.741802395514696, 106.69608802455443),
+        //    ], {
+        //        strokeColor: 'blue',
+        //        strokeThickness: 4
+        //    }),
+        //]
+
+        //polylines?.forEach(pol => {
+        //    map.entities.push(pol);
+        //})
+
+        //const pointData = [
+        //    {
+        //        geometry: {
+        //            lat: 10.742932117315178, // x
+        //            long: 106.69775233524817, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742724046654033, // x
+        //            long: 106.69899017470854, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742302637280815, // x
+        //            long: 106.6988748397209, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742157777672958, // x
+        //            long: 106.69957221406477, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742476468718522, // x
+        //            long: 106.69765979903715, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742318440142924, // x
+        //            long: 106.69870854276198, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742318440142924, // x
+        //            long: 106.69870854276198, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.74187332587718, // x
+        //            long: 106.69858073902762, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741636282509404, // x
+        //            long: 106.69857537460959, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741404506592133, // x
+        //            long: 106.69855123472846, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741349196403746, // x
+        //            long: 106.69876849365866, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742043384190637, // x
+        //            long: 106.69760086278184, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741577198986306, // x
+        //            long: 106.69750698546632, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741798439511982, // x
+        //            long: 106.69607867268783, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741051001401715, // x
+        //            long: 106.70032366726005, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.740948282352164, // x
+        //            long: 106.70041620347106, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.741496690216891, // x
+        //            long: 106.69802820397055, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //    {
+        //        geometry: {
+        //            lat: 10.742226256768973, // x
+        //            long: 106.69660837310332, // y
+        //        },
+        //        options: {
+        //            // color: 'red',
+        //        },
+        //        metadata: {
+        //            color: 'red',
+        //            name: "Van số 001",
+        //            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+        //            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+        //            status: 'Ổn định',
+        //            isActive: true,
+        //        }
+        //    },
+        //]
+
+        //pointData?.forEach(point => {
+        //    const loc = new Microsoft.Maps.Location(point.geometry.lat, point.geometry.long)
+        //    const options = point?.options
+
+        //    //console.log("options", options)
+
+        //    const pushpin = new Microsoft.Maps.Pushpin(loc, options);
+        //    pushpin.metadata = point?.metadata;
+
+        //    const { metadata, geometry } = point;
+
+        //    addPinAndInfoBoxFromAction(map, geometry.lat, geometry.long, metadata.name, metadata.description, metadata.name, metadata.description)
+
+        //})
 
 
         $(document).ready(function () {
@@ -526,7 +612,117 @@
                 }
             });
         })
+
+        // Create checkboxes for each layer
+        var layerList = document.getElementById('layerList');
+        for (var i = 0; i < map.layers.length; i++) {
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.onchange = (function (layer) {
+                return function () {
+                    layer.setVisible(this.checked);
+                }
+            })(map.layers[i]);
+            console.log("map.layers[i], ", map.layers[i])
+            console.log("map.layers[i], ", map.layers[i]._id)
+            var label = document.createElement('label');
+            //label.innerHTML = 'Layer ' + (i + 1);
+            label.innerHTML = map.layers[i]._id;
+
+            layerList.appendChild(checkbox);
+            layerList.appendChild(label);
+            layerList.appendChild(document.createElement('br'));
+        }
+
+
+        //Define a custom overlay class that inherts from the CustomOverlay class.
+        PanningOverlay.prototype = new Microsoft.Maps.CustomOverlay({ beneathLabels: false });
+
+        //Get the LayerCollection object from the map.
+        var layerCollection = map.layers;
+
+        //Loop through the array and log the ids of each layer.
+        console.log("layerCollection", layerCollection)
+
+        //Define a constructor for the custom overlay class.
+        function PanningOverlay() {
+            this.panUpBtn = document.createElement('input');
+            this.panUpBtn.type = 'button';
+            this.panUpBtn.value = '˄';
+            this.panUpBtn.onclick = function () {
+                panMap('up');
+            };
+
+            this.panDownBtn = document.createElement('input');
+            this.panDownBtn.type = 'button';
+            this.panDownBtn.value = '˅';
+            this.panDownBtn.onclick = function () {
+                panMap('down');
+            };
+
+            this.panLeftBtn = document.createElement('input');
+            this.panLeftBtn.type = 'button';
+            this.panLeftBtn.value = '<';
+            this.panLeftBtn.onclick = function () {
+                panMap('left');
+            };
+
+            this.panRightBtn = document.createElement('input');
+            this.panRightBtn.type = 'button';
+            this.panRightBtn.value = '>';
+            this.panRightBtn.onclick = function () {
+                panMap('right');
+            };
+        }
+
+        //Implement the onAdd method to set up DOM elements, and use setHtmlElement to bind it with the overlay.
+        PanningOverlay.prototype.onAdd = function () {
+            //Create a div that will hold pan buttons.
+            var container = document.createElement('div');
+            container.appendChild(this.panUpBtn);
+            container.appendChild(this.panDownBtn);
+            container.appendChild(this.panLeftBtn);
+            container.appendChild(this.panRightBtn);
+            container.style.position = 'absolute';
+            container.style.top = '10px';
+            container.style.left = '10px';
+            this.setHtmlElement(container);
+        };
+
+        //Implement the new custom overlay class.
+        var overlay = new PanningOverlay();
+
+        //Add the custom overlay to the map.
+        map.layers.insert(overlay);
     }
+
+
+    function panMap(dir) {
+        var dx = 0, dy = 0;
+        switch (dir) {
+            case 'up':
+                dy = -30;
+                break;
+            case 'down':
+                dy = 30;
+                break;
+            case 'left':
+                dx = -30;
+                break;
+            case 'right':
+                dx = 30;
+                break;
+        }
+
+        var cp = map.tryLocationToPixel(map.getCenter());
+        cp.x += dx;
+        cp.y += dy;
+
+        map.setView({ center: map.tryPixelToLocation(cp) });
+    }
+
+
 
     //function GetMap() {
     //    var map = new Microsoft.Maps.Map('#myMap', {

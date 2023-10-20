@@ -659,21 +659,21 @@
         })
 
 
-        $(document).ready(function () {
-            $.ajax({
-                //data: formData,
-                type: "GET",
-                url: '@Url.Action("GetWaterClockAsJson", "WaterClocks")',
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (res) {
-                    //console.log(res)
-                    res.forEach(item =>
-                        addPinAndInfoBoxFromAction(map, item.lat, item.long, item.title, item.description, item.infoBoxTitle, item.infoBoxDescription))
-                }
-            });
-        })
+        //$(document).ready(function () {
+        //    $.ajax({
+        //        //data: formData,
+        //        type: "GET",
+        //        url: '@Url.Action("GetWaterClockAsJson", "WaterClocks")',
+        //        cache: false,
+        //        contentType: false,
+        //        processData: false,
+        //        success: function (res) {
+        //            //console.log(res)
+        //            res.forEach(item =>
+        //                addPinAndInfoBoxFromAction(map, item.lat, item.long, item.title, item.description, item.infoBoxTitle, item.infoBoxDescription))
+        //        }
+        //    });
+        //})
 
 
         //Create a layer for rendering the data that is along a route.
@@ -965,8 +965,14 @@
                 directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
 
                 //Create waypoints to route between.
-                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: currentAddress }));
-                directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: address }));
+                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: currentAddress }));
+                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: address }));
+
+                let startWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: currentAddress });
+                directionsManager.addWaypoint(startWaypoint);
+
+                let endWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: address });
+                directionsManager.addWaypoint(endWaypoint);
 
                 //Set the request options that avoid highways and uses kilometers.
                 directionsManager.setRequestOptions({
