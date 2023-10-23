@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MioMap;
 
@@ -10,9 +11,11 @@ using MioMap;
 namespace MioMap.Migrations
 {
     [DbContext(typeof(MioMapDbContext))]
-    partial class MioMapDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231023052250_add-gis-layer")]
+    partial class addgislayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,15 +43,7 @@ namespace MioMap.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("InWaterClock")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -66,16 +61,9 @@ namespace MioMap.Migrations
                     b.Property<double>("Long")
                         .HasColumnType("double");
 
-                    b.Property<string>("OutWaterClock")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("WaterClockStatus")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

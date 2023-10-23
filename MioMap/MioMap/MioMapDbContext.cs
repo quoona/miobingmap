@@ -14,5 +14,7 @@ namespace MioMap
         public DbSet<WaterClock> WaterClocks { get; set; }
 
         public DbSet<MioMap.Models.WaterPipline> WaterPiplines { get; set; } = default!;
+
+        public DbSet<MioMap.Models.GisLayer> GisLayers { get; set; } = default!;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MioMap.Models
 {
@@ -17,5 +18,8 @@ namespace MioMap.Models
         public string InfoBoxDescription { get; set; }
         // search tags
         public string Tags { get; set; }
+        public int? GisLayerId { get; set; }
+        [ForeignKey(nameof(GisLayerId))]
+        public GisLayer? GisLayer { get; set; }
     }
 }
