@@ -27,6 +27,10 @@ namespace MioMap.Controllers
                           Problem("Entity set 'MioMapDbContext.WaterClocks'  is null.");
         }
 
+        public IActionResult WaterClockMap()
+        {
+            return View();
+        }
 
         public async Task<IActionResult> GetWaterClockAsJson()
         {
