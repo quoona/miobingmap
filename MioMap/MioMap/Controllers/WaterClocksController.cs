@@ -61,7 +61,9 @@ namespace MioMap.Controllers
         // GET: WaterClocks/Create
         public IActionResult Create()
         {
-            return View();
+            ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
+            var model = new WaterClock();
+            return View(model);
         }
 
         // POST: WaterClocks/Create
@@ -69,8 +71,10 @@ namespace MioMap.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Lat,Long,Title,Description,InfoBoxTitle,InfoBoxDescription")] WaterClock waterClock)
+        public async Task<IActionResult> Create(WaterClock waterClock)
         {
+            ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
+
             if (ModelState.IsValid)
             {
                 _context.Add(waterClock);
@@ -83,6 +87,8 @@ namespace MioMap.Controllers
         // GET: WaterClocks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
+
             if (id == null || _context.WaterClocks == null)
             {
                 return NotFound();
@@ -101,8 +107,9 @@ namespace MioMap.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Lat,Long,Title,Description,InfoBoxTitle,InfoBoxDescription")] WaterClock waterClock)
+        public async Task<IActionResult> Edit(int id, WaterClock waterClock)
         {
+            ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).AsNoTracking().ToList();
             if (id != waterClock.Id)
             {
                 return NotFound();
@@ -172,5 +179,7 @@ namespace MioMap.Controllers
         {
           return (_context.WaterClocks?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        
     }
 }
