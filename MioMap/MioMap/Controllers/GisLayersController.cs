@@ -161,11 +161,12 @@ namespace MioMap.Controllers
             return (_context.GisLayers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public IActionResult MatrixOfClockConnection()
+        private List<List<string>> GetWaterClockMatrix(List<WaterClockMatrix> data)
         {
-            var index = 0;
-            var data = _context.WaterClocks.ToList().Select(x => new WaterClockMatrix(x, index++)).ToList();
-
+            if (data.Count == 0)
+            {
+                return new List<List<string>>();
+            }
             string[,] matrix = new string[data.Count, data.Count];
             var result = new List<List<string>>();
             for (int i = 0; i < matrix.GetLength(0); i++)
@@ -173,28 +174,93 @@ namespace MioMap.Controllers
                 var lineResult = new List<string>();
                 for (int j = 0; j < matrix.GetLength(1); j++)
                 {
-                    var print = "";
+                    var checkPoint = "";
                     if (i == j)
                     {
-                        print = "...";
+                        checkPoint = "...";
                     }
                     else
                     {
-                        print = "0";
+                        checkPoint = "0";
                         List<int> outIds = data[i].OutWaterClock.Split(",").Select(int.Parse).ToList();
                         foreach (var id in outIds)
                         {
                             var outClock = data.FirstOrDefault(x => ((dynamic)x).Id == id);
                             if (outClock != null && outClock.Index == j)
                             {
-                                print = "1";
+                                checkPoint = "1";
                             }
                         }
                     }
-                    lineResult.Add(print);
+                    lineResult.Add(checkPoint);
                 }
                 result.Add(lineResult);
             }
+            return result;
+        }
+
+        public IActionResult MatrixOfClockConnection()
+        {
+            var index = 0;
+            var listWaterClock = _context.WaterClocks.ToList().Select(x => new WaterClockMatrix(x, index++)).ToList();
+            var result = GetWaterClockMatrix(listWaterClock);
+            return new JsonResult(result);
+        }
+
+        private static string[,] ConvertToTwoDimensionalArray(List<List<string>> listOfLists)
+        {
+            int rowCount = listOfLists.Count;
+            int colCount = listOfLists.Max(list => list.Count);
+
+            string[,] result = new string[rowCount, colCount];
+
+            for (int row = 0; row < rowCount; row++)
+            {
+                List<string> list = listOfLists[row];
+                for (int col = 0; col < list.Count; col++)
+                {
+                    result[row, col] = list[col];
+                }
+            }
+
+            return result;
+        }
+
+        private void GetPathFromPointInMatrix(List<string> result, List<WaterClockMatrix> listWaterClockMatrix, int modelId, string[,] matrixString)
+        {
+            var modelInMatrix = listWaterClockMatrix.FirstOrDefault(x => x.Id == modelId);
+            if (modelInMatrix == null)
+            {
+                return;
+            }
+            for (int j = 0; j < matrixString.GetLength(1); j++)
+            {
+                var temp = listWaterClockMatrix.FirstOrDefault(x => x.Index == j);
+                if (temp != null)
+                {
+                    if (matrixString[modelInMatrix.Index, j] == "0")
+                    {
+                        result.Add(temp.Id.ToString());
+                    }
+                    else if (matrixString[modelInMatrix.Index, j] == "1")
+                    {
+                        foreach (var id in temp.OutWaterClock.Split(',').Select(int.Parse))
+                        {
+                            GetPathFromPointInMatrix(result, listWaterClockMatrix, id, matrixString);
+                        }
+                    }
+                }
+            }
+        }
+
+        public IActionResult PathFromPontInMatrix(int Id)
+        {
+            var result = new List<string>();
+            var index = 0;
+            var listWaterClockMatrix = _context.WaterClocks.ToList().Select(x => new WaterClockMatrix(x, index++)).ToList();
+            var matrixList = GetWaterClockMatrix(listWaterClockMatrix);
+            string[,] matrixString = ConvertToTwoDimensionalArray(matrixList);
+            GetPathFromPointInMatrix(result, listWaterClockMatrix, Id, matrixString);
             return new JsonResult(result);
         }
     }
