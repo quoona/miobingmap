@@ -183,16 +183,19 @@ namespace MioMap.Controllers
                     {
                         checkPoint = "0";
                         var outerIds = data[i].OutWaterClock;
-                        if (string.IsNullOrEmpty(outerIds)) continue;
-                        List<int> outIds = outerIds.Split(",").Select(int.Parse).ToList();
-                        foreach (var id in outIds)
+                        if (!string.IsNullOrEmpty(outerIds))
                         {
-                            var outClock = data.FirstOrDefault(x => ((dynamic)x).Id == id);
-                            if (outClock != null && outClock.Index == j)
+                            List<int> outIds = outerIds.Split(",").Select(int.Parse).ToList();
+                            foreach (var id in outIds)
                             {
-                                checkPoint = "1";
+                                var outClock = data.FirstOrDefault(x => ((dynamic)x).Id == id);
+                                if (outClock != null && outClock.Index == j)
+                                {
+                                    checkPoint = "1";
+                                }
                             }
                         }
+
                     }
                     lineResult.Add(checkPoint);
                 }
@@ -240,12 +243,19 @@ namespace MioMap.Controllers
                 var temp = listWaterClockMatrix.FirstOrDefault(x => x.Index == j);
                 if (temp != null)
                 {
-                    if (matrixString[modelInMatrix.Index, j] == "0")
+                    if (matrixString[modelInMatrix.Index, j] == "...")
                     {
-                        result.Add(temp.Id.ToString());
+                        if (!result.Contains(temp.Id.ToString()))
+                        {
+                            result.Add(temp.Id.ToString());
+                        }
                     }
                     else if (matrixString[modelInMatrix.Index, j] == "1")
                     {
+                        if (!result.Contains(temp.Id.ToString()))
+                        {
+                            result.Add(temp.Id.ToString());
+                        }
                         foreach (var id in temp.OutWaterClock.Split(',').Select(int.Parse))
                         {
                             GetPathFromPointInMatrix(result, listWaterClockMatrix, id, matrixString);
