@@ -22,9 +22,9 @@ namespace MioMap.Controllers
         // GET: WaterClocks
         public async Task<IActionResult> Index()
         {
-              return _context.WaterClocks != null ? 
-                          View(await _context.WaterClocks.ToListAsync()) :
-                          Problem("Entity set 'MioMapDbContext.WaterClocks'  is null.");
+            return _context.WaterClocks != null ?
+                        View(await _context.WaterClocks.ToListAsync()) :
+                        Problem("Entity set 'MioMapDbContext.WaterClocks'  is null.");
         }
 
         public IActionResult WaterClockMap()
@@ -34,7 +34,7 @@ namespace MioMap.Controllers
 
         public async Task<IActionResult> GetWaterClockAsJson()
         {
-       
+
             return _context.WaterClocks != null ?
                         new JsonResult(await _context.WaterClocks.ToListAsync()) :
                         Problem("Entity set 'MioMapDbContext.WaterClocks'  is null.");
@@ -73,15 +73,21 @@ namespace MioMap.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(WaterClock waterClock)
         {
+            if (string.IsNullOrEmpty(waterClock.InWaterClock))
+            {
+                waterClock.InWaterClock = "";
+            }
+            if (string.IsNullOrEmpty(waterClock.OutWaterClock))
+            {
+                waterClock.OutWaterClock = "";
+            }
+
             ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
 
-            if (ModelState.IsValid)
-            {
-                _context.Add(waterClock);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(waterClock);
+            _context.Add(waterClock);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+            //return View(waterClock);
         }
 
         // GET: WaterClocks/Edit/5
@@ -170,16 +176,16 @@ namespace MioMap.Controllers
             {
                 _context.WaterClocks.Remove(waterClock);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool WaterClockExists(int id)
         {
-          return (_context.WaterClocks?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.WaterClocks?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        
+
     }
 }

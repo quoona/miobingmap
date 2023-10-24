@@ -1,22 +1,86 @@
 ﻿<style>
-    #layerList input {
-        margin-right: 10px;
-        cursor: pointer;
+    /* NOTE */
+    .note-container {
+        border: 1px solid gray;
+        padding: 20px;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
     }
 
-    #layerList label {
-        cursor: pointer;
-        user-select: none;
+    .note-item {
+        width: 47%;
     }
-    /*      #myMap {
-                                                                 position: relative;
-                                                                 width: calc(100% - 380px);
-                                                                 height: 100%;
-                                                                 float: left;
-                                                             } */
 
+        .note-item h4 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .note-item .water-clock-label {
+            margin-top: 5px;
+        }
+
+            .note-item .water-clock-label .water-clock-item {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+
+                .note-item .water-clock-label .water-clock-item .label-status {
+                    width: 25%;
+                }
+
+    .label-water-clock-bar {
+        border-radius: 100%;
+        width: 20px;
+        height: 20px;
+    }
+
+        .label-water-clock-bar.none {
+            background-color: gray;
+        }
+
+        .label-water-clock-bar.stable {
+            background-color: #16a34a;
+        }
+
+        .label-water-clock-bar.reparing {
+            background-color: #f59e0b;
+        }
+
+        .label-water-clock-bar.maintance {
+            background-color: #9333ea;
+        }
+
+        .label-water-clock-bar.damaged {
+            background-color: #e11d48;
+        }
+
+        .label-water-clock-bar.safe {
+            background-color: #5eead4;
+        }
+
+        .label-water-clock-bar.infected {
+            background-color: #db2777;
+        }
+
+    .label-pipline-bar {
+        border-radius: 5px;
+        width: 100%;
+        height: 8px;
+    }
+
+        .label-pipline-bar.default {
+            background-color: #3b82f6;
+        }
+
+        .label-pipline-bar.highlight {
+            background-color: #93c5fd;
+        }
     /* MAP INFO BOX */
-
 
     .map-info-container {
         background: white;
@@ -113,7 +177,59 @@
     }
 </style>
 
-<div id="layerList"></div>
+<div class="note-container">
+    <div class="note-item">
+        <h4>Van nước</h4>
+        <div class="water-clock-label">
+            <div class="water-clock-item">
+                <span class="label-status">Chưa cập nhật</span>
+                <span class="label-water-clock-bar none"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Ổn định</span>
+                <span class="label-water-clock-bar stable"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Đang sửa chữa</span>
+                <span class="label-water-clock-bar reparing"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Bảo trì</span>
+                <span class="label-water-clock-bar maintance"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Hỏng</span>
+                <span class="label-water-clock-bar damaged"><span>
+            </div>
+        </div>
+    </div>
+    <div class="note-item">
+        <h4>Kiểm tra van nước</h4>
+        <div class="water-clock-label">
+            <div class="water-clock-item">
+                <span class="label-status">Van an toàn</span>
+                <span class="label-water-clock-bar safe"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Van bị ảnh hưởng</span>
+                <span class="label-water-clock-bar infected"><span>
+            </div>
+        </div>
+    </div>
+    <div class="note-item">
+        <h4>Đường ống</h4>
+        <div class="water-clock-label">
+            <div class="water-clock-item">
+                <span class="label-status">Mặc định</span>
+                <span class="label-pipline-bar default"><span>
+            </div>
+            <div class="water-clock-item">
+                <span class="label-status">Đường ống thuộc van đang hover</span>
+                <span class="label-pipline-bar highlight"><span>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="myMap" style="width:100%;height:80vh"></div>
 
 <script type='text/javascript'>
@@ -122,23 +238,24 @@
 
     const tempInfoBox = []
 
+    // INIT DATA
     const waterClockMockData = [
         {
             waterClockId: 1,
+            color: 'red',
             lat: 10.742932117315178, // x
-            color:'red',
             long: 106.69775233524817, // y
             title: 'Van số 001',
             address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '',
-            OutWaterClock: '2,5'
+            inWaterClock: '',
+            outWaterClock: '2,5'
         },
         {
             waterClockId: 2,
-            color:'red',
+            color: 'red',
             lat: 10.742724046654033, // x
             long: 106.69899017470854, // y
             title: 'Van số 002',
@@ -146,12 +263,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '1',
-            OutWaterClock: '3'
+            inWaterClock: '1',
+            outWaterClock: '3'
         },
         {
             waterClockId: 3,
-            color:'red',
+            color: 'red',
             lat: 10.742302637280815, // x
             long: 106.6988748397209, // y
             title: 'Van số 003',
@@ -159,12 +276,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '2',
-            OutWaterClock: '4'
+            inWaterClock: '2',
+            outWaterClock: '4'
         },
         {
             waterClockId: 4,
-            color:'red',
+            color: 'red',
             lat: 10.742157777672958, // x
             long: 106.69957221406477, // y
             title: 'Van số 004',
@@ -172,12 +289,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '3',
-            OutWaterClock: ''
+            inWaterClock: '3',
+            outWaterClock: ''
         },
         {
             waterClockId: 5,
-            color:'red',
+            color: 'red',
             lat: 10.742476468718522, // x
             long: 106.69765979903715, // y
             title: 'Van số 005',
@@ -185,12 +302,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '1',
-            OutWaterClock: '6,11'
+            inWaterClock: '1',
+            outWaterClock: '6,11'
         },
         {
             waterClockId: 6,
-            color:'red',
+            color: 'red',
             lat: 10.742318440142924, // x
             long: 106.69870854276198, // y
             title: 'Van số 006',
@@ -198,12 +315,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '5',
-            OutWaterClock: ''
+            inWaterClock: '5',
+            outWaterClock: ''
         },
         {
             waterClockId: 7,
-            color:'red',
+            color: 'red',
             lat: 10.74187332587718, // x
             long: 106.69858073902762, // y
             title: 'Van số 007',
@@ -211,12 +328,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '11',
-            OutWaterClock: '8'
+            inWaterClock: '11',
+            outWaterClock: '8'
         },
         {
             waterClockId: 8,
-            color:'red',
+            color: 'red',
             lat: 10.741636282509404, // x
             long: 106.69857537460959, // y
             title: 'Van số 008',
@@ -224,12 +341,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '7',
-            OutWaterClock: '9'
+            inWaterClock: '7',
+            outWaterClock: '9'
         },
         {
             waterClockId: 9,
-            color:'red',
+            color: 'red',
             lat: 10.741404506592133, // x
             long: 106.69855123472846, // y
             title: 'Van số 009',
@@ -237,12 +354,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '8',
-            OutWaterClock: '10,12'
+            inWaterClock: '8',
+            outWaterClock: '10,12'
         },
         {
             waterClockId: 10,
-            color:'red',
+            color: 'red',
             lat: 10.741349196403746, // x
             long: 106.69876849365866, // y
             title: 'Van số 010',
@@ -250,12 +367,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '9',
-            OutWaterClock: '14'
+            inWaterClock: '9',
+            outWaterClock: '14'
         },
         {
             waterClockId: 11,
-            color:'red',
+            color: 'red',
             lat: 10.742043384190637, // x
             long: 106.69760086278184, // y
             title: 'Van số 011',
@@ -263,12 +380,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '5',
-            OutWaterClock: '12'
+            inWaterClock: '5',
+            outWaterClock: '12'
         },
         {
             waterClockId: 12,
-            color:'red',
+            color: 'red',
             lat: 10.741577198986306, // x
             long: 106.69750698546632, // y
             title: 'Van số 012',
@@ -276,12 +393,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '9,11',
-            OutWaterClock: '13'
+            inWaterClock: '9,11',
+            outWaterClock: '13'
         },
         {
             waterClockId: 13,
-            color:'red',
+            color: 'red',
             lat: 10.741798439511982, // x
             long: 106.69607867268783, // y
             title: 'Van số 013',
@@ -289,12 +406,12 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '12',
-            OutWaterClock: ''
+            inWaterClock: '12',
+            outWaterClock: ''
         },
         {
             waterClockId: 14,
-            color:'red',
+            color: 'red',
             lat: 10.741051001401715, // x
             long: 106.70032366726005, // y
             title: 'Van số 014',
@@ -302,463 +419,14 @@
             description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
             status: 1,
             statusDisplay: 'Ổn định',
-            InWaterClock: '10',
-            OutWaterClock: ''
+            inWaterClock: '10',
+            outWaterClock: ''
         }
     ]
 
-    // INIT DATA
-    const polylineData = [
-        {
-            polylineId: 1,
-            geometry: [
-                {
-                    lat: 10.742932117315206,
-                    long: 106.69775635856169,
-                },
-                {
-                    lat: 10.742716145233672,
-                    long: 106.6990009035446,
-                },
-                {
-                    lat: 10.742289468228435,
-                    long: 106.69887215751189,
-                },
-                {
-                    lat: 10.742041889936672,
-                    long: 106.70016498225706,
-                }
-            ],
-        },
-        {
-            polylineId: 2,
-            geometry: [
-                {
-                    lat: 10.742932117315206,
-                    long: 106.69775635856169,
-                },
-                {
-                    lat: 10.742473834909632,
-                    long: 106.6976678456642,
-                },
-                {
-                    lat: 10.742318440142938,
-                    long: 106.69871122497099,
-                },
-                {
-                    lat: 10.741878593505504,
-                    long: 106.69863612311858,
-                },
-                {
-                    lat: 10.741393293609661,
-                    long: 106.69854492801207,
-                }
-            ],
-        },
-        {
-            polylineId: 3,
-            geometry: [
-                {
-                    lat: 10.741393293609661,
-                    long: 106.69854492801207,
-                },
-                {
-                    lat: 10.741300648101344,
-                    long: 106.69896067040938,
-                },
-                {
-                    lat: 10.741100477779,
-                    long: 106.69998527425307,
-                },
-                {
-                    lat: 10.74102146314155,
-                    long: 106.70036614793318,
-                },
-                {
-                    lat: 10.740952983772374,
-                    long: 106.70042515653151,
-                },
-                {
-                    lat: 10.740594783742182,
-                    long: 106.70038224118727,
-                }
-            ],
-        },
-        {
-            polylineId: 4,
-            geometry: [
-                {
-                    lat: 10.741350474803696,
-                    long: 106.69877023356932,
-                },
-                {
-                    lat: 10.740860584123823,
-                    long: 106.69868440288084,
-                },
-            ],
-        },
-        {
-            polylineId: 5,
-            geometry: [
-                {
-                    lat: 10.742485710506685,
-                    long: 106.69767452729853,
-                },
-                {
-                    lat: 10.742022159797969,
-                    long: 106.69759942544611,
-                },
-                {
-                    lat: 10.74155334074392,
-                    long: 106.69750823033961,
-                },
-                {
-                    lat: 10.741068718035507,
-                    long: 106.69742776406916,
-                }
-            ],
-        },
-        {
-            polylineId: 6,
-            geometry: [
-                {
-                    lat: 10.74186279062036,
-                    long: 106.69858784335631,
-                },
-                {
-                    lat: 10.742305271091226,
-                    long: 106.69605583804625,
-                },
-            ],
-        },
-        {
-            polylineId: 7,
-            geometry: [
-                {
-                    lat: 10.74141259067531,
-                    long: 106.69852883475798,
-                },
-                {
-                    lat: 10.741802395514696,
-                    long: 106.69608802455443,
-                }
-            ],
-        }
-    ]
-    const pointData = [
-        {
-            geometry: {
-                lat: 10.742932117315178, // x
-                long: 106.69775233524817, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 001",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [1, 2],
-                in: [1, 2],
-                out: [3],
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742724046654033, // x
-                long: 106.69899017470854, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 002",
-                address: '10.74272, 106.6989',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [1]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742302637280815, // x
-                long: 106.6988748397209, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 003",
-                address: '11 Đường số 8, Khu đô thị Him Lam, Quận 7, Thành phố Hồ Chí Minh 72900, Vietnam',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [1]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742157777672958, // x
-                long: 106.69957221406477, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 004",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [1]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742476468718522, // x
-                long: 106.69765979903715, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 005",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [5]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742318440142924, // x
-                long: 106.69870854276198, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 006",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [2]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.74187332587718, // x
-                long: 106.69858073902762, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 007",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [6]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741636282509404, // x
-                long: 106.69857537460959, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 008",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [2]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741404506592133, // x
-                long: 106.69855123472846, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 009",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [2, 3]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741349196403746, // x
-                long: 106.69876849365866, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 010",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [4]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742043384190637, // x
-                long: 106.69760086278184, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 011",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [5, 6]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741577198986306, // x
-                long: 106.69750698546632, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 012",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [5, 7]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741798439511982, // x
-                long: 106.69607867268783, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 013",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [7]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741051001401715, // x
-                long: 106.70032366726005, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 014",
-                address: '645 Đ. Nguyễn Hữu Thọ, Tân Phong, Quận 7, Thành phố Hồ Chí Minh, Vietnam',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [3]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.740948282352164, // x
-                long: 106.70041620347106, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 015",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [3]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.741496690216891, // x
-                long: 106.69802820397055, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 016",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [7]
-            }
-        },
-        {
-            geometry: {
-                lat: 10.742226256768973, // x
-                long: 106.69660837310332, // y
-            },
-            options: {
-                // color: 'red',
-            },
-            metadata: {
-                color: 'red',
-                name: "Van số 017",
-                address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
-                description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-                status: 'Ổn định',
-                isActive: true,
-                polylineIds: [6]
-            }
-        },
-    ]
-
-    var polylineArray = []
-    var array2 = []
-    var pointArray = []
+    let waterClocks = []
+    let pipeWaters = []
+    let matrixConnection
     // END INIT
 
     function GetMap() {
@@ -769,159 +437,119 @@
             zoom: 18
         });
 
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetWaterClockAsJson", "WaterClocks")',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                waterClocks = res
 
+                pipeWaters = handlePolyline(res)
 
-        // RENDER POLYLINES - PIPELINE
-        Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
-            // polylineData?.forEach(pol => {
-            //     const _locations = pol?.geometry?.map(item => {
-            //         return new Microsoft.Maps.Location(item?.lat, item?.long)
-            //     })
-            //     const _pol = new Microsoft.Maps.Polyline(_locations)
-            //     map.entities.push(_pol);
-            // })
-            highlightLayer = new Microsoft.Maps.Layer();
-            map.layers.insert(highlightLayer);
+                // RENDER POLYLINES - PIPELINE
+                Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
+                    pipeWaters?.forEach(pol => {
+                        map.entities.push(pol);
+                    })
+                    highlightLayer = new Microsoft.Maps.Layer();
+                    map.layers.insert(highlightLayer);
+                });
+
+                // RENDER POINT/PIN - WaterClock
+                res?.forEach(wc => {
+                    const { lat, long } = wc
+                    // const loc = new Microsoft.Maps.Location(lat, long)
+                    const pushpin = handlePushPin(map, lat, long, wc)
+                    // pointArray.push(pushpin)
+                })
+
+                //Create an infobox at the center of the map but don't show it.
+                infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+                    visible: false
+                });
+
+                //Assign the infobox to a map instance.
+                infobox.setMap(map);
+
+                const faultyClock = 1
+                // Check WaterClock
+                const una = unaffectedClocks(res, faultyClock);
+                console.log(una);  // Output: [2]
+
+                const aff = isAffected(res, faultyClock);
+                console.log(aff);  // Output: [1, 0]
+            }
         });
 
-        // waterClockMockData?.forEach(wc => {
-        //     const _locations = pol?.geometry?.map(item => {
-        //         return new Microsoft.Maps.Location(item?.lat, item?.long)
-        //     })
-        //     const _pol = new Microsoft.Maps.Polyline(_locations, {
-        //         strokeColor: '#2563eb',
-        //         strokeThickness: 4
-        //     })
-        //     array2.push(_pol)
-        // })
 
 
-        // RENDER POINT/PIN - WaterClock
-        waterClockMockData?.forEach(wc => {
-            const { lat, long } = wc
-            const loc = new Microsoft.Maps.Location(lat, long)
-
-            const pushpin = handlePushPin(map, lat, long, wc)
-            pointArray.push(pushpin)
-        })
-
-
-        //Create a layer for rendering the data that is along a route.
-        // dataLayer = new Microsoft.Maps.Layer();
-
-        //Add the layer to the map.
-        // map.layers.insert(dataLayer);
-
-        //Add click event to shapes in the data layer.
-        // Microsoft.Maps.Events.addHandler(dataLayer, 'click', shapeClicked);
-
-        //Create an infobox at the center of the map but don't show it.
-        infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
-            visible: false
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("MatrixOfClockConnection", "GisLayers")',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                matrixConnection = res
+            }
         });
-
-        //Assign the infobox to a map instance.
-        infobox.setMap(map);
-
-
-        // Render Layer
-        var polylineLayer = new Microsoft.Maps.Layer("Đường ông nước (Polylines)");
-        var pointLayer = new Microsoft.Maps.Layer("Van/Đồng hồ nước (Pushpin/Point)");
-
-        //Add into the layer.
-        console.log(polylineArray)
-        console.log(pointArray)
-
-        polylineLayer.add(array2);
-        pointLayer.add(pointArray);
-
-        //Insert the layer into the map.
-        map.layers.insert(polylineLayer);
-        map.layers.insert(pointLayer);
-
-        console.log(" map.layers:", map.layers)
-
-        // Create checkboxes for each layer
-        var layerList = document.getElementById('layerList');
-        for (var i = 0; i < map.layers.length; i++) {
-            var checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `input-${map.layers[i]._id}`
-            checkbox.checked = true;
-            checkbox.onchange = (function (layer) {
-                return function () {
-                    layer.setVisible(this.checked);
-                }
-            })(map.layers[i]);
-            console.log("map.layers[i], ", map.layers[i])
-            console.log("map.layers[i], ", map.layers[i]._id)
-            var label = document.createElement('label');
-            //label.innerHTML = 'Layer ' + (i + 1);
-            label.innerHTML = map.layers[i]._id;
-            label.setAttribute("for", `input-${map.layers[i]._id}`)
-
-            layerList.appendChild(checkbox);
-            layerList.appendChild(label);
-            layerList.appendChild(document.createElement('br'));
-        }
 
     }
 
     function handlePushPin(map, lat, long, data) {
-        const { title, address, status, statusDisplay, description, color } = data
+        const { id, title, address, waterClockStatus, description, color } = data
 
         var infobox;
         var infoboxTemplate = `<div class="map-info-container">
-      <div class="map-info-image">
-        <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
-      </div>
-      <div class="map-info-body">
-        <div class="map-info-header">
-          <p class="title">{title}</h3>
-          <p class="address">{address}</h3>
-        </div>
-        <div class="map-info-content">
-          <div class="attribute">
-            <span class="property">Tình trạng</span><span lass="value">{status}</span>
-          </div>
-          <div class="attribute">
-            <span class="property">Trạng thái</span><span lass="value">{active}</span>
-          </div>
-          <div>
-            <p>{description}</p>
-          </div>
-        </div>
-        <div class="map-info-action">
-          <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
-          <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-        </div>
-      </div>
-    </div>`;
+                              <div class="map-info-image">
+                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
+                              </div>
+                              <div class="map-info-body">
+                                <div class="map-info-header">
+                                  <p class="title">{title}</h3>
+                                  <p class="address">{address}</h3>
+                                </div>
+                                <div class="map-info-content">
+                                  <div class="attribute">
+                                    <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                  </div>
+                                  <div>
+                                    <p>{description}</p>
+                                  </div>
+                                </div>
+                                <div class="map-info-action">
+                                  <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
+                                  <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra đồng hồ</button>
+                                  <button class="btn-light" id="close-btn-${lat}">Đóng</button>
+                                </div>
+                              </div>
+                            </div>`;
 
         var loc = new Microsoft.Maps.Location(lat, long)
+
+        const colorWaterStatus = getColorWaterClockByStatus(waterClockStatus)
         var pushpin = new Microsoft.Maps.Pushpin(loc, {
-            color: color,
+            color: colorWaterStatus,
             title: title
         });
 
         //console.log(pushpin)
 
         //Add the pushpin to the map
-        // map.entities.push(pushpin);
+        map.entities.push(pushpin);
+        const statusDisplay = getStatusWaterClockDisplay(waterClockStatus)
 
-
-        infobox = new Microsoft.Maps.Infobox(loc,
-            {
-                //title: infoBoxTitle,
-                //description: infoBoxDescription,
-                visible: false,
-                htmlContent: infoboxTemplate
-                    .replace('{title}', title)
-                    .replace('{address}', address)
-                    .replace('{status}', status)
-                    .replace('{active}', statusDisplay)
-                    .replace('{description}', description)
-            }
+        infobox = new Microsoft.Maps.Infobox(loc, {
+            visible: false,
+            htmlContent: infoboxTemplate
+                .replace('{title}', title)
+                .replace('{address}', address)
+                .replace('{status}', statusDisplay)
+                .replace('{active}', statusDisplay)
+                .replace('{description}', description)
+        }
         );
 
         infobox.setMap(map);
@@ -930,8 +558,9 @@
 
         Microsoft.Maps.Events.addHandler(pushpin, 'mouseover', function (e) {
             // Hightlight
-            pushpinHovered(e, infobox, metadata?.name, metadata)
-            lineClicked(metadata?.polylineIds)
+            pushpinHovered(e, infobox, data?.name, data)
+            // lineClicked(data?.polylineIds)
+            lineClicked(lat, long)
         });
         Microsoft.Maps.Events.addHandler(pushpin, 'mouseout', function (e) {
             closeTooltip()
@@ -973,106 +602,36 @@
 
     }
 
-    function getDirection(address) {
-        // console.log("address", address)
+    function handlePolyline(data) {
+        const result = [];
 
+        for (const item of data) {
+            const currentClock = item;
+            const outWaterClockIds = currentClock?.outWaterClock.split(",")
 
-        // const elementFrom = document.querySelector('input[title="From"][data-tag="watermarkInput"]');
-        // const elementTo = document.querySelector('input[title="To"][data-tag="watermarkInput"]');
-        // const elementGo = document.querySelector('a[role="button"][data-tag="dirBtnGo"]');
-
-        // console.log("elementFrom", elementFrom)
-        // console.log("elementTo", elementTo)
-
-        // elementFrom.setAttribute("value", "10.742767792534757, 106.69918865817564");
-        // elementTo.setAttribute("value", address);
-
-        // elementFrom.value = "10.742767792534757, 106.69918865817564"
-        // elementTo.value = address
-
-        // elementGo.click()
-
-        // return;
-        navigator.geolocation.getCurrentPosition(async function (position) {
-            // console.log("position", position.coords)
-            directionsManager.clearAll();
-            resetDirectionPanel()
-            const { latitude, longitude } = position.coords
-
-
-
-
-            // var loc = new Microsoft.Maps.Location(
-            //     position.coords.latitude,
-            //     position.coords.longitude);
-
-            // //Add a pushpin at the user's location.
-            // var pin = new Microsoft.Maps.Pushpin(loc);
-            // map.entities.push(pin);
-
-            // //Center the map on the user's location.
-            // map.setView({ center: loc, zoom: 15 });
-
-
-            // const apiEndpoitGetAddressByCoor = `http:dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN`
-
-            // const response = await fetch(apiEndpoitGetAddressByCoor);
-            // const currentLocation = await response.json();
-
-            // const currentAddress = currentLocation?.resourceSets[0]?.resources[0]?.name
-
-
-            Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
-                //Create an instance of the directions manager.
-
-                directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
-
-                //Create waypoints to route between.
-                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: currentAddress }));
-                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: address }));
-
-                // let startWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: currentAddress });
-                let startWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: "10.742767792534757, 106.69918865817564" });
-                directionsManager.addWaypoint(startWaypoint);
-
-                let endWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: address });
-                directionsManager.addWaypoint(endWaypoint);
-
-                //Set the request options that avoid highways and uses kilometers.
-                directionsManager.setRequestOptions({
-                    distanceUnit: Microsoft.Maps.Directions.DistanceUnit.km,
-                    routeAvoidance: [Microsoft.Maps.Directions.RouteAvoidance.avoidLimitedAccessHighway]
+            const polylines = data.filter(x => outWaterClockIds?.includes(x.id.toString()))
+            for (const poly of polylines) {
+                const polyline = new Microsoft.Maps.Polyline([
+                    new Microsoft.Maps.Location(currentClock.lat, currentClock.long),
+                    new Microsoft.Maps.Location(poly.lat, poly.long),
+                ], {
+                    strokeColor: '#2563eb',
+                    strokeThickness: 4
                 });
+                result.push(polyline);
+            }
+        }
 
-                //Make the route line thick and green. Replace the title of waypoints with an empty string to hide the default text that appears.
-                directionsManager.setRenderOptions({
-                    drivingPolylineOptions: {
-                        strokeColor: 'green',
-                        strokeThickness: 6
-                    },
-                    // waypointPushpinOptions: {
-                    //     title: 'Hehe'
-                    // }
-                });
-
-                //Calculate directions.
-                directionsManager.calculateDirections();
-                Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
-            });
-
-
-
-            // console.log(currentLocation);
-        });
+        return result;
     }
 
-    function pushpinHovered(e, infobox, infoboxTitle, metadata) {
+    function pushpinHovered(e, infobox, infoboxTitle, data) {
         //Hide the infobox
         infobox.setOptions({ visible: false });
         tooltip.setOptions({
             location: e.target.getLocation(),
-            title: metadata.name,
-            description: metadata.description,
+            title: data.name,
+            description: data.description,
             // htmlContent: tooltipTemplate.replace('{title}', infoboxTitle),
             visible: true
         });
@@ -1085,27 +644,25 @@
         });
     }
 
-    function lineClicked(polylineIds) {
+    function lineClicked(lat, long) {
         highlightLayer.clear();
 
         // GET Polylines with IDS
-        const polylines = polylineData.filter(pol => polylineIds.includes(pol?.polylineId))
+
+        const polylines = pipeWaters.filter(pol => {
+            return pol?.geometry.y.includes(lat) && pol?.geometry.x.includes(long)
+        })
         if (!polylines || polylines.length === 0) {
             alert("Van này không thuộc ống nào!")
             return
         }
 
         for (let poly of polylines) {
-            const _locations = poly?.geometry?.map(item => {
-                return new Microsoft.Maps.Location(item?.lat, item?.long)
-            })
 
-            // var  clickLocation = _locations[0];
-            // var lineSegment = getLineSegment(clickLocation, _locations);
-
-            // if (lineSegment) {
-            //     highlightLayer.add(lineSegment.path);
-            // }
+            const _locations = poly?.geometry?.x.map((longitude, index) => {
+                const latitude = poly?.geometry?.y[index];
+                return new Microsoft.Maps.Location(latitude, longitude);
+            });
 
             for (let loca of _locations) {
                 var clickLocation = loca;
@@ -1205,15 +762,83 @@
     }
 
     function shapeClicked(e) {
-        //Make sure the infobox has metadata to display.
-        if (e.primitive.metadata) {
-            //Set the infobox options with the metadata of the pushpin.
+        //Make sure the infobox has data to display.
+        if (e.primitive.data) {
+            //Set the infobox options with the data of the pushpin.
             infobox.setOptions({
                 location: e.primitive.getLocation(),
-                title: e.primitive.metadata.Name,
-                description: 'Store Type: ' + e.primitive.metadata.StoreType,
+                title: e.primitive.data.Name,
+                description: 'Store Type: ' + e.primitive.data.StoreType,
                 visible: true
             });
         }
+    }
+
+    function unaffectedClocks(clockData, faultyClock) {
+        const n = clockData.length;
+        const affected = [];
+
+        function dfs(clock) {
+            affected.push(clock);
+            for (let i = 0; i < n; i++) {
+                if (clockData[clock][i] === '1' && !affected.includes(i)) {
+                    dfs(i);
+                }
+            }
+        }
+
+        dfs(faultyClock);
+        const unaffected = [];
+        for (let i = 0; i < n; i++) {
+            if (!affected.includes(i) && i !== faultyClock) {
+                unaffected.push(i);
+            }
+        }
+        return unaffected;
+    }
+
+    function isAffected(clockData, faultyClock) {
+        const n = clockData.length;
+        const affected = [];
+
+        function dfs(clock) {
+            affected.push(clock);
+            for (let i = 0; i < n; i++) {
+                if (clockData[clock][i] === '1' && !affected.includes(i)) {
+                    dfs(i);
+                }
+            }
+        }
+
+        dfs(faultyClock);
+        return affected;
+    }
+
+    function getStatusWaterClockDisplay(status) {
+        switch (status) {
+            case 1: return "Ổn định";
+            case 2: return "Đang sửa chữa";
+            case 3: return "Bảo trì";
+            case 4: return "Hỏng";
+            default: return "Chưa cập nhật"
+        }
+    }
+    function getColorWaterClockByStatus(status) {
+        switch (status) {
+            case 1: return "#16a34a";
+            case 2: return "#f59e0b";
+            case 3: return "#9333ea";
+            case 4: return "#e11d48";
+            default: return "gray"
+        }
+    }
+
+    function handleCheckWaterClock(id) {
+        const index = +id - 1
+
+        const safe = unaffectedClocks(matrixConnection, index)
+        const infested = isAffected(matrixConnection, index)
+        console.log("safe", safe)
+        console.log("infested", infested)
     }
 </script>

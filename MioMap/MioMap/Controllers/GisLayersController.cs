@@ -181,7 +181,10 @@ namespace MioMap.Controllers
                     else
                     {
                         print = "0";
-                        List<int> outIds = data[i].OutWaterClock.Split(",").Select(int.Parse).ToList();
+                        if (string.IsNullOrEmpty(data[i].OutWaterClock)) continue;
+                        var stringIds = data[i].OutWaterClock;
+
+                        List<int> outIds = stringIds.Split(",").Select(int.Parse).ToList();
                         foreach (var id in outIds)
                         {
                             var outClock = data.FirstOrDefault(x => ((dynamic)x).Id == id);
