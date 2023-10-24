@@ -256,10 +256,14 @@ namespace MioMap.Controllers
                         {
                             result.Add(temp.Id.ToString());
                         }
-                        foreach (var id in temp.OutWaterClock.Split(',').Select(int.Parse))
+                        if (!string.IsNullOrEmpty(temp.OutWaterClock))
                         {
-                            GetPathFromPointInMatrix(result, listWaterClockMatrix, id, matrixString);
+                            foreach (var id in temp.OutWaterClock.Split(',').Select(int.Parse))
+                            {
+                                GetPathFromPointInMatrix(result, listWaterClockMatrix, id, matrixString);
+                            }
                         }
+
                     }
                 }
             }
