@@ -64,7 +64,7 @@
         }
 
         .label-water-clock-bar.infected {
-            background-color: #db2777;
+            background-color: #eab308;
         }
 
     .label-pipline-bar {
@@ -223,9 +223,11 @@
 <div id="myMap" style="width:100%;height:80vh"></div>
 
 <script type='text/javascript'>
+    // INIT MAP VARIABLE
     var map, tooltip, highlightLayer, dataLayer, directionsManager;
+    
+    // INIT Template
     var tooltipTemplate = '<div style="background-color:white;height:100px;width:150px;padding:5px;text-align:center; border-radius: 15px; padding:10px"><b>{title}</b></div>';
-
     const tempInfoBox = []
 
     // INIT DATA
@@ -417,11 +419,10 @@
     let waterClocks = []
     let pipeWaters = []
 
-    let waterClockPuspins = []
-
     let matrixConnection
     // END INIT
 
+    // START RENDER MAP
     function GetMap() {
         map = new Microsoft.Maps.Map('#myMap', {
             credentials: 'Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK',
@@ -458,9 +459,6 @@
                         ...wc,
                         pushpin
                     })
-
-                    waterClockPuspins.push(pushpin)
-
                     // pointArray.push(pushpin)
                 })
 
@@ -486,6 +484,33 @@
             }
         });
 
+        //Create an infobox at the center of the map but don't show it.
+        infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+            visible: false
+        });
+
+        //Assign the infobox to a map instance.
+        infobox.setMap(map);
+
+        resetDirectionPanel()
+
+    }
+
+    // Functions
+    function resetDirectionPanel() {
+        Microsoft.Maps.loadModule(['Microsoft.Maps.Directions', 'Microsoft.Maps.SpatialDataService'], function () {
+            //Create an instance of the directions manager.
+            directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+
+            //Specify where to display the route instructions.
+            directionsManager.setRenderOptions({ itineraryContainer: '#directionsItinerary' });
+
+            //Specify the where to display the input panel
+            directionsManager.showInputPanel('directionsPanel');
+
+            //Add event handler to directions manager.
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', directionsUpdated);
+        });
     }
 
     function handlePushPin(map, lat, long, data) {
@@ -503,26 +528,26 @@
 
         var infobox;
         var infoboxTemplate = `<div class="map-info-container">
-                                      <div class="map-info-body">
-                                        <div class="map-info-header">
-                                          <p class="title">{title}</h3>
-                                          <p class="address">{address}</h3>
-                                        </div>
-                                        <div class="map-info-content">
-                                          <div class="attribute">
-                                            <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                          <div class="map-info-body">
+                                            <div class="map-info-header">
+                                              <p class="title">{title}</h3>
+                                              <p class="address">{address}</h3>
+                                            </div>
+                                            <div class="map-info-content">
+                                              <div class="attribute">
+                                                <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                              </div>
+                                              <div>
+                                                <p>{description}</p>
+                                              </div>
+                                            </div>
+                                            <div class="map-info-action">
+                                              <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
+                                                      <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra van</button>
+                                              <button class="btn-light" id="close-btn-${lat}">Đóng</button>
+                                            </div>
                                           </div>
-                                          <div>
-                                            <p>{description}</p>
-                                          </div>
-                                        </div>
-                                        <div class="map-info-action">
-                                          <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
-                                                  <button class="btn-blue" onclick="handleCheckWaterClock('${id}','${pushpin?.id}')">Kiểm tra van</button>
-                                          <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-                                        </div>
-                                      </div>
-                                    </div>`;
+                                        </div>`;
 
 
         //console.log(pushpin)
@@ -586,7 +611,6 @@
         });
 
         tooltip.setMap(map);
-        console.log("pushpin", pushpin)
         return pushpin;
         // GET DIRECTION
 
@@ -616,52 +640,11 @@
     }
 
     function getDirection(address) {
-        // console.log("address", address)
-
-
-        // const elementFrom = document.querySelector('input[title="From"][data-tag="watermarkInput"]');
-        // const elementTo = document.querySelector('input[title="To"][data-tag="watermarkInput"]');
-        // const elementGo = document.querySelector('a[role="button"][data-tag="dirBtnGo"]');
-
-        // console.log("elementFrom", elementFrom)
-        // console.log("elementTo", elementTo)
-
-        // elementFrom.setAttribute("value", "10.742767792534757, 106.69918865817564");
-        // elementTo.setAttribute("value", address);
-
-        // elementFrom.value = "10.742767792534757, 106.69918865817564"
-        // elementTo.value = address
-
-        // elementGo.click()
-
-        // return;
         navigator.geolocation.getCurrentPosition(async function (position) {
             // console.log("position", position.coords)
-            directionsManager.clearAll();
+            directionsManager?.clearAll();
             resetDirectionPanel()
             const { latitude, longitude } = position.coords
-
-
-
-
-            // var loc = new Microsoft.Maps.Location(
-            //     position.coords.latitude,
-            //     position.coords.longitude);
-
-            // //Add a pushpin at the user's location.
-            // var pin = new Microsoft.Maps.Pushpin(loc);
-            // map.entities.push(pin);
-
-            // //Center the map on the user's location.
-            // map.setView({ center: loc, zoom: 15 });
-
-
-            // const apiEndpoitGetAddressByCoor = `http:dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?includeEntityTypes=Address,PopulatedPlace,CountryRegion&key=Amuk1_zODINIvN2YrHfOFxxScGfe8LhyPJvz37PbrCTQhZEWgkFXJvk7OcsM5SIK&setMkt=vi-VN`
-
-            // const response = await fetch(apiEndpoitGetAddressByCoor);
-            // const currentLocation = await response.json();
-
-            // const currentAddress = currentLocation?.resourceSets[0]?.resources[0]?.name
 
 
             Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
@@ -669,11 +652,6 @@
 
                 directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
 
-                //Create waypoints to route between.
-                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: currentAddress }));
-                //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: address }));
-
-                // let startWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: currentAddress });
                 let startWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: "10.742767792534757, 106.69918865817564" });
                 directionsManager.addWaypoint(startWaypoint);
 
@@ -714,15 +692,13 @@
         infobox.setOptions({ visible: false });
         tooltip.setOptions({
             location: e.target.getLocation(),
-            title: data.name,
+            title: data.title,
             description: data.description,
-            // htmlContent: tooltipTemplate.replace('{title}', infoboxTitle),
             visible: true
         });
     }
 
     function closeTooltip() {
-        //Close the tooltip.
         tooltip.setOptions({
             visible: false
         });
@@ -731,13 +707,11 @@
     function lineClicked(lat, long) {
         highlightLayer.clear();
 
-        // GET Polylines with IDS
-
         const polylines = pipeWaters.filter(pol => {
             return pol?.geometry.y.includes(lat) && pol?.geometry.x.includes(long)
         })
+
         if (!polylines || polylines.length === 0) {
-            alert("Van này không thuộc ống nào!")
             return
         }
 
@@ -916,7 +890,7 @@
         }
     }
 
-    function handleCheckWaterClock(waterClockId, pushpinId) {
+    function handleCheckWaterClock(waterClockId) {
         let stringSafeWaterClock = ''
         let stringInfectedWaterClock = ''
 
@@ -928,47 +902,42 @@
                 waterClockId: waterClockId
             },
             success: function (res) {
-                console.log("res", res)
+                const { affected, safe } = res
+
+                const safeWaterClock = waterClocks.filter(x => safe.includes(x.id.toString()))
+                for (const item of safeWaterClock) {
+                    stringSafeWaterClock += `${item.title} - `
+                    item.pushpin.setOptions({
+                        color: '#5eead4'
+                    })
+                }
+
+                const infectedWaterClock = waterClocks.filter(x => affected.includes(x.id.toString()) && x.id !== waterClockId)
+                for (const item of infectedWaterClock) {
+                    stringInfectedWaterClock += `${item.title} - `
+                    item.pushpin.setOptions({
+                        color: '#eab308'
+                    })
+                }
+
+                const _safeMessage = `Van an toàn: ${stringSafeWaterClock}`;
+                const _infectedMessage = `Van ảnh hưởng:  ${stringInfectedWaterClock}`;
+                toastr.info(_safeMessage)
+                toastr.warning(_infectedMessage)
             }
         });
 
 
-        const index = +waterClockId - 1
+        // const index = +waterClockId - 1
 
 
-        const safe = unaffectedClocks(matrixConnection, index)
-        const infested = isAffected(matrixConnection, index)
+        // const safe = unaffectedClocks(matrixConnection, index)
+        // const infested = isAffected(matrixConnection, index)
 
 
-        const puspin = waterClockPuspins.find(x => x.id === pushpinId)
+        // const puspin = waterClockPuspins.find(x => x.id === pushpinId)
 
-        const _safe = safe.map(s => s + 1);
-        const safeWaterClock = waterClocks.filter(x => _safe.includes(x.id))
-        for (const item of safeWaterClock) {
-            stringSafeWaterClock += `${item.title} - `
-            item.pushpin.setOptions({
-                color: '#5eead4'
-            })
-        }
+        // const _safe = safe.map(s => s + 1);
 
-        const _infected = infested.map(s => s + 1);
-        const infectedWaterClock = waterClocks.filter(x => _infected.includes(x.id) && x.id !== waterClockId)
-        for (const item of infectedWaterClock) {
-            stringInfectedWaterClock += `${item.title} - `
-            item.pushpin.setOptions({
-                color: '#DB2777'
-            })
-        }
-
-
-
-        const _safeMessage = `Van an toàn: ${stringSafeWaterClock}`;
-        const _infectedMessage = `Van ảnh hưởng:  ${stringInfectedWaterClock}`;
-        toastr.info(_safeMessage)
-        toastr.warning(_infectedMessage)
-        console.log("_safe", _safe)
-        console.log("_infected", _infected)
-        console.log("safeWaterClock", safeWaterClock)
-        console.log("infectedWaterClock", infectedWaterClock)
     }
 </script>
