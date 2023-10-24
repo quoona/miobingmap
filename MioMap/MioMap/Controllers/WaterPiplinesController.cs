@@ -32,6 +32,18 @@ namespace MioMap.Controllers
                         Problem("Entity set 'MioMapDbContext.WaterPipline'  is null.");
         }
 
+        public IActionResult SearchWaterClock(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                keyword = "";
+            }
+
+            return _context.WaterPiplines != null ?
+                        new JsonResult(_context.WaterClocks.ToList().Where(x => x.Title.ToLower().Contains(keyword.ToLower()))) :
+                        Problem("Entity set 'MioMapDbContext.WaterPipline'  is null.");
+        }
+
         // GET: WaterPiplines/Details/5
         public async Task<IActionResult> Details(int? id)
         {
