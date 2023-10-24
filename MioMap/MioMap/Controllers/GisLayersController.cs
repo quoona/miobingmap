@@ -182,7 +182,9 @@ namespace MioMap.Controllers
                     else
                     {
                         checkPoint = "0";
-                        List<int> outIds = data[i].OutWaterClock.Split(",").Select(int.Parse).ToList();
+                        var outerIds = data[i].OutWaterClock;
+                        if (string.IsNullOrEmpty(outerIds)) continue;
+                        List<int> outIds = outerIds.Split(",").Select(int.Parse).ToList();
                         foreach (var id in outIds)
                         {
                             var outClock = data.FirstOrDefault(x => ((dynamic)x).Id == id);
@@ -253,7 +255,7 @@ namespace MioMap.Controllers
             }
         }
 
-        public IActionResult PathFromPontInMatrix(int Id)
+        public IActionResult PathFromPontInMatrix(int waterClockId)
         {
             var affected = new List<string>();
             var safe = new List<string>();
@@ -261,7 +263,7 @@ namespace MioMap.Controllers
             var listWaterClockMatrix = _context.WaterClocks.ToList().Select(x => new WaterClockMatrix(x, index++)).ToList();
             var matrixList = GetWaterClockMatrix(listWaterClockMatrix);
             string[,] matrixString = ConvertToTwoDimensionalArray(matrixList);
-            GetPathFromPointInMatrix(affected, listWaterClockMatrix, Id, matrixString);
+            GetPathFromPointInMatrix(affected, listWaterClockMatrix, waterClockId, matrixString);
             safe.AddRange(listWaterClockMatrix.Where(x => !affected.Select(int.Parse).Contains(x.Id)).Select(x => x.Id.ToString()));
             return new JsonResult(
                 new

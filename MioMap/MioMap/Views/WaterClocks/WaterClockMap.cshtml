@@ -483,8 +483,6 @@
             }
         });
 
-
-
         $.ajax({
             type: "GET",
             url: '@Url.Action("MatrixOfClockConnection", "GisLayers")',
@@ -503,29 +501,29 @@
 
         var infobox;
         var infoboxTemplate = `<div class="map-info-container">
-                              <div class="map-info-image">
-                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
-                              </div>
-                              <div class="map-info-body">
-                                <div class="map-info-header">
-                                  <p class="title">{title}</h3>
-                                  <p class="address">{address}</h3>
-                                </div>
-                                <div class="map-info-content">
-                                  <div class="attribute">
-                                    <span class="property">Tình trạng</span><span lass="value">{status}</span>
-                                  </div>
-                                  <div>
-                                    <p>{description}</p>
-                                  </div>
-                                </div>
-                                <div class="map-info-action">
-                                  <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
-                                  <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra đồng hồ</button>
-                                  <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-                                </div>
-                              </div>
-                            </div>`;
+                                          <div class="map-info-image">
+                                            <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/36/55/06/bermondsey-street-coffee.jpg" alt="img" />
+                                          </div>
+                                          <div class="map-info-body">
+                                            <div class="map-info-header">
+                                              <p class="title">{title}</h3>
+                                              <p class="address">{address}</h3>
+                                            </div>
+                                            <div class="map-info-content">
+                                              <div class="attribute">
+                                                <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                              </div>
+                                              <div>
+                                                <p>{description}</p>
+                                              </div>
+                                            </div>
+                                            <div class="map-info-action">
+                                              <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
+                                              <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra đồng hồ</button>
+                                              <button class="btn-light" id="close-btn-${lat}">Đóng</button>
+                                            </div>
+                                          </div>
+                                        </div>`;
 
         var loc = new Microsoft.Maps.Location(lat, long)
 
@@ -834,11 +832,25 @@
     }
 
     function handleCheckWaterClock(id) {
-        const index = +id - 1
+        console.log("id", id)
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("PathFromPontInMatrix", "GisLayers")',
+            data: {
+                waterClockId: id
+            },
+            success: function (res) {
+                console.log("res", res)
+            }
+        });
 
-        const safe = unaffectedClocks(matrixConnection, index)
-        const infested = isAffected(matrixConnection, index)
-        console.log("safe", safe)
-        console.log("infested", infested)
+
+        // const index = +id - 1
+
+
+        // const safe = unaffectedClocks(matrixConnection, index)
+        // const infested = isAffected(matrixConnection, index)
+        // console.log("safe", safe)
+        // console.log("infested", infested)
     }
 </script>
