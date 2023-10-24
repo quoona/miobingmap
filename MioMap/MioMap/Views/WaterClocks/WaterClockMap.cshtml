@@ -225,7 +225,7 @@
 <script type='text/javascript'>
     // INIT MAP VARIABLE
     var map, tooltip, highlightLayer, dataLayer, directionsManager;
-    
+
     // INIT Template
     var tooltipTemplate = '<div style="background-color:white;height:100px;width:150px;padding:5px;text-align:center; border-radius: 15px; padding:10px"><b>{title}</b></div>';
     const tempInfoBox = []
@@ -438,12 +438,16 @@
             contentType: false,
             processData: false,
             success: function (res) {
-                pipeWaters = handlePolyline(res)
-
+                const handleResult = handlePolyline(res)
                 // RENDER POLYLINES - PIPELINE
                 Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
-                    pipeWaters?.forEach(pol => {
+                    pipeWaters = handleResult?.map((pol, index) => {
                         map.entities.push(pol);
+
+                        return {
+                            ...res[index],
+                            polyline: pol
+                        }
                     })
                     highlightLayer = new Microsoft.Maps.Layer();
                     map.layers.insert(highlightLayer);
@@ -528,26 +532,26 @@
 
         var infobox;
         var infoboxTemplate = `<div class="map-info-container">
-                                          <div class="map-info-body">
-                                            <div class="map-info-header">
-                                              <p class="title">{title}</h3>
-                                              <p class="address">{address}</h3>
-                                            </div>
-                                            <div class="map-info-content">
-                                              <div class="attribute">
-                                                <span class="property">Tình trạng</span><span lass="value">{status}</span>
-                                              </div>
-                                              <div>
-                                                <p>{description}</p>
-                                              </div>
-                                            </div>
-                                            <div class="map-info-action">
-                                              <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
-                                                      <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra van</button>
-                                              <button class="btn-light" id="close-btn-${lat}">Đóng</button>
-                                            </div>
-                                          </div>
-                                        </div>`;
+                                                          <div class="map-info-body">
+                                                            <div class="map-info-header">
+                                                              <p class="title">{title}</h3>
+                                                              <p class="address">{address}</h3>
+                                                            </div>
+                                                            <div class="map-info-content">
+                                                              <div class="attribute">
+                                                                <span class="property">Tình trạng</span><span lass="value">{status}</span>
+                                                              </div>
+                                                              <div>
+                                                                <p>{description}</p>
+                                                              </div>
+                                                            </div>
+                                                            <div class="map-info-action">
+                                                              <button class="btn-blue" onclick="getDirection('${lat},${long}')">Chỉ đường</button>
+                                                                      <button class="btn-blue" onclick="handleCheckWaterClock('${id}')">Kiểm tra van</button>
+                                                                  <button class="btn-light" id="close-btn-${lat}" onclick="resetWaterClockMap('${id}')">Đóng</button>
+                                                            </div>
+                                                          </div>
+                                                        </div>`;
 
 
         //console.log(pushpin)
@@ -705,10 +709,12 @@
     }
 
     function lineClicked(lat, long) {
-        highlightLayer.clear();
+        highlightLayer?.clear();
 
         const polylines = pipeWaters.filter(pol => {
-            return pol?.geometry.y.includes(lat) && pol?.geometry.x.includes(long)
+            const { polyline } = pol
+
+            return polyline?.geometry.y.includes(lat) && polyline?.geometry.x.includes(long)
         })
 
         if (!polylines || polylines.length === 0) {
@@ -716,8 +722,10 @@
         }
 
         for (let poly of polylines) {
-            const _locations = poly?.geometry?.x.map((longitude, index) => {
-                const latitude = poly?.geometry?.y[index];
+            const { polyline } = poly
+
+            const _locations = polyline?.geometry?.x.map((longitude, index) => {
+                const latitude = polyline?.geometry?.y[index];
                 return new Microsoft.Maps.Location(latitude, longitude);
             });
 
@@ -894,7 +902,6 @@
         let stringSafeWaterClock = ''
         let stringInfectedWaterClock = ''
 
-
         $.ajax({
             type: "GET",
             url: '@Url.Action("PathFromPontInMatrix", "GisLayers")',
@@ -912,7 +919,7 @@
                     })
                 }
 
-                const infectedWaterClock = waterClocks.filter(x => affected.includes(x.id.toString()) && x.id !== waterClockId)
+                const infectedWaterClock = waterClocks.filter(x => affected.includes(x.id.toString()))
                 for (const item of infectedWaterClock) {
                     stringInfectedWaterClock += `${item.title} - `
                     item.pushpin.setOptions({
@@ -922,22 +929,36 @@
 
                 const _safeMessage = `Van an toàn: ${stringSafeWaterClock}`;
                 const _infectedMessage = `Van ảnh hưởng:  ${stringInfectedWaterClock}`;
+
                 toastr.info(_safeMessage)
                 toastr.warning(_infectedMessage)
             }
         });
-
-
         // const index = +waterClockId - 1
-
 
         // const safe = unaffectedClocks(matrixConnection, index)
         // const infested = isAffected(matrixConnection, index)
 
-
         // const puspin = waterClockPuspins.find(x => x.id === pushpinId)
 
         // const _safe = safe.map(s => s + 1);
+    }
+
+    function resetWaterClockMap(waterClockId) {
+        // TODO:
+        // GET LIST WATERCLOCK BY LIST ID
+        for (const wc of waterClocks) {
+            const color = getColorWaterClockByStatus(wc.waterClockStatus)
+
+            wc.pushpin.setOptions({
+                color
+            })
+        }
+    }
+
+
+
+    function handleCheckPipeWater() {
 
     }
 </script>
