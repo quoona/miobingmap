@@ -255,13 +255,21 @@ namespace MioMap.Controllers
 
         public IActionResult PathFromPontInMatrix(int Id)
         {
-            var result = new List<string>();
+            var affected = new List<string>();
+            var safe = new List<string>();
             var index = 0;
             var listWaterClockMatrix = _context.WaterClocks.ToList().Select(x => new WaterClockMatrix(x, index++)).ToList();
             var matrixList = GetWaterClockMatrix(listWaterClockMatrix);
             string[,] matrixString = ConvertToTwoDimensionalArray(matrixList);
-            GetPathFromPointInMatrix(result, listWaterClockMatrix, Id, matrixString);
-            return new JsonResult(result);
+            GetPathFromPointInMatrix(affected, listWaterClockMatrix, Id, matrixString);
+            safe.AddRange(listWaterClockMatrix.Where(x => !affected.Select(int.Parse).Contains(x.Id)).Select(x => x.Id.ToString()));
+            return new JsonResult(
+                new
+                {
+                    affected,
+                    safe
+                }
+            );
         }
     }
 }
