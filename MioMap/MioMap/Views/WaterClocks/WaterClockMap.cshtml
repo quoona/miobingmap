@@ -392,8 +392,7 @@
     // INIT DATA
     const waterClockMockData = [
         {
-            waterClockId: 1,
-            color: 'red',
+            id: 1,
             lat: 10.742932117315178, // x
             long: 106.69775233524817, // y
             title: 'Van số 001',
@@ -405,7 +404,7 @@
             outWaterClock: '2,5'
         },
         {
-            waterClockId: 2,
+            id: 2,
             color: 'red',
             lat: 10.742724046654033, // x
             long: 106.69899017470854, // y
@@ -418,7 +417,7 @@
             outWaterClock: '3'
         },
         {
-            waterClockId: 3,
+            id: 3,
             color: 'red',
             lat: 10.742302637280815, // x
             long: 106.6988748397209, // y
@@ -431,7 +430,7 @@
             outWaterClock: '4'
         },
         {
-            waterClockId: 4,
+            id: 4,
             color: 'red',
             lat: 10.742157777672958, // x
             long: 106.69957221406477, // y
@@ -444,7 +443,7 @@
             outWaterClock: ''
         },
         {
-            waterClockId: 5,
+            id: 5,
             color: 'red',
             lat: 10.742476468718522, // x
             long: 106.69765979903715, // y
@@ -457,7 +456,7 @@
             outWaterClock: '6,11'
         },
         {
-            waterClockId: 6,
+            id: 6,
             color: 'red',
             lat: 10.742318440142924, // x
             long: 106.69870854276198, // y
@@ -470,7 +469,7 @@
             outWaterClock: ''
         },
         {
-            waterClockId: 7,
+            id: 7,
             color: 'red',
             lat: 10.74187332587718, // x
             long: 106.69858073902762, // y
@@ -483,7 +482,7 @@
             outWaterClock: '8'
         },
         {
-            waterClockId: 8,
+            id: 8,
             color: 'red',
             lat: 10.741636282509404, // x
             long: 106.69857537460959, // y
@@ -496,7 +495,7 @@
             outWaterClock: '9'
         },
         {
-            waterClockId: 9,
+            id: 9,
             color: 'red',
             lat: 10.741404506592133, // x
             long: 106.69855123472846, // y
@@ -509,7 +508,7 @@
             outWaterClock: '10,12'
         },
         {
-            waterClockId: 10,
+            id: 10,
             color: 'red',
             lat: 10.741349196403746, // x
             long: 106.69876849365866, // y
@@ -522,7 +521,7 @@
             outWaterClock: '14'
         },
         {
-            waterClockId: 11,
+            id: 11,
             color: 'red',
             lat: 10.742043384190637, // x
             long: 106.69760086278184, // y
@@ -535,7 +534,7 @@
             outWaterClock: '12'
         },
         {
-            waterClockId: 12,
+            id: 12,
             color: 'red',
             lat: 10.741577198986306, // x
             long: 106.69750698546632, // y
@@ -548,7 +547,7 @@
             outWaterClock: '13'
         },
         {
-            waterClockId: 13,
+            id: 13,
             color: 'red',
             lat: 10.741798439511982, // x
             long: 106.69607867268783, // y
@@ -561,7 +560,7 @@
             outWaterClock: ''
         },
         {
-            waterClockId: 14,
+            id: 14,
             color: 'red',
             lat: 10.741051001401715, // x
             long: 106.70032366726005, // y
@@ -1057,7 +1056,7 @@
         }
     }
 
-    function handleCheckWaterClock(waterClockId) {
+    function handleCheckWaterClock(id) {
         let stringSafeWaterClock = ''
         let stringInfectedWaterClock = ''
 
@@ -1065,7 +1064,7 @@
             type: "GET",
             url: '@Url.Action("PathFromPontInMatrix", "GisLayers")',
             data: {
-                waterClockId: waterClockId
+                waterClockId: id
             },
             success: function (res) {
                 const { affected, safe } = res
@@ -1093,7 +1092,7 @@
                 toastr.warning(_infectedMessage)
             }
         });
-        // const index = +waterClockId - 1
+        // const index = +id - 1
 
         // const safe = unaffectedClocks(matrixConnection, index)
         // const infested = isAffected(matrixConnection, index)
@@ -1126,7 +1125,7 @@
         $.ajax({
             //data: formData,
             type: "GET",
-            url: `@Url.Action("SearchWaterClock", "WaterPiplines")?keyword=${keyword}`,
+            url: `@Url.Action("SearchWaterClock", "WaterClocks")?keyword=${keyword}`,
             cache: false,
             contentType: false,
             processData: false,

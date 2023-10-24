@@ -4,12 +4,69 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<style>
+    /* CSS */
+    .button-custom {
+        appearance: none;
+        background-color: #2ea44f;
+        border: 1px solid rgba(27, 31, 35, .15);
+        border-radius: 6px;
+        box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+        padding: 6px 16px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+        .button-custom:focus:not(:focus-visible):not(.focus-visible) {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .button-custom:hover {
+            background-color: #2c974b;
+            color: white;
+        }
+
+        .button-custom:focus {
+            box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+            outline: none;
+        }
+
+        .button-custom:disabled {
+            background-color: #94d3a2;
+            border-color: rgba(27, 31, 35, .1);
+            color: rgba(255, 255, 255, .8);
+            cursor: default;
+        }
+
+        .button-custom:active {
+            background-color: #298e46;
+            box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+        }
+</style>
+
+<h1>Danh sách Van (Đồng hồ nước)</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
-    <a asp-action="WaterClockMap">Map</a>
+    <a asp-action="Create" class="button-custom">Tạo mới Van (Đồng hồ)</a>
+    <a asp-action="WaterClockMap" class="button-custom">Xem bản đồ</a>
+    <button onclick="generateWaterClock()" class="button-custom">Generate Data</button>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +77,7 @@
                 @Html.DisplayNameFor(model => model.Long)
             </th>
             <th>
-                Tên van (Trụ nước)
+                Tên Van (Đồng hồ) nước
             </th>
             <th>
                 Mô tả
@@ -29,26 +86,222 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Lat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Long)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lat)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Long)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<script type='text/javascript'>
+    const waterClockMockData = [
+        {
+            id: 1,
+            lat: 10.742932117315178, // x
+            long: 106.69775233524817, // y
+            title: 'Van số 001',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '',
+            outWaterClock: '2'
+        },
+        {
+            id: 2,
+            color: 'red',
+            lat: 10.742724046654033, // x
+            long: 106.69899017470854, // y
+            title: 'Van số 002',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '1',
+            outWaterClock: '3'
+        },
+        {
+            id: 3,
+            color: 'red',
+            lat: 10.742302637280815, // x
+            long: 106.6988748397209, // y
+            title: 'Van số 003',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '2',
+            outWaterClock: '4'
+        },
+        {
+            id: 4,
+            color: 'red',
+            lat: 10.742157777672958, // x
+            long: 106.69957221406477, // y
+            title: 'Van số 004',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '3',
+            outWaterClock: ''
+        },
+        {
+            id: 5,
+            color: 'red',
+            lat: 10.742476468718522, // x
+            long: 106.69765979903715, // y
+            title: 'Van số 005',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '1',
+            outWaterClock: '6,11'
+        },
+        {
+            id: 6,
+            color: 'red',
+            lat: 10.742318440142924, // x
+            long: 106.69870854276198, // y
+            title: 'Van số 006',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '5',
+            outWaterClock: ''
+        },
+        {
+            id: 7,
+            color: 'red',
+            lat: 10.74187332587718, // x
+            long: 106.69858073902762, // y
+            title: 'Van số 007',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '11',
+            outWaterClock: '8'
+        },
+        {
+            id: 8,
+            color: 'red',
+            lat: 10.741636282509404, // x
+            long: 106.69857537460959, // y
+            title: 'Van số 008',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '7',
+            outWaterClock: '9'
+        },
+        {
+            id: 9,
+            color: 'red',
+            lat: 10.741404506592133, // x
+            long: 106.69855123472846, // y
+            title: 'Van số 009',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '8',
+            outWaterClock: '10,12'
+        },
+        {
+            id: 10,
+            color: 'red',
+            lat: 10.741349196403746, // x
+            long: 106.69876849365866, // y
+            title: 'Van số 010',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '9',
+            outWaterClock: '14'
+        },
+        {
+            id: 11,
+            color: 'red',
+            lat: 10.742043384190637, // x
+            long: 106.69760086278184, // y
+            title: 'Van số 011',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '5',
+            outWaterClock: ''
+        },
+        {
+            id: 12,
+            color: 'red',
+            lat: 10.741577198986306, // x
+            long: 106.69750698546632, // y
+            title: 'Van số 012',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '9',
+            outWaterClock: '13'
+        },
+        {
+            id: 13,
+            color: 'red',
+            lat: 10.741798439511982, // x
+            long: 106.69607867268783, // y
+            title: 'Van số 013',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '12',
+            outWaterClock: ''
+        },
+        {
+            id: 14,
+            color: 'red',
+            lat: 10.741051001401715, // x
+            long: 106.70032366726005, // y
+            title: 'Van số 014',
+            address: '21 Đường số 6, KDC Him Lam, Tân Hưng, Q7, TP Hồ Chí Minh',
+            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+            waterClockStatus: 1,
+            inWaterClock: '10',
+            outWaterClock: ''
+        }
+    ]
+
+
+
+    function generateWaterClock() {
+        // let formData = new FormData();
+        // formData.append("WaterClocks", JSON.stringify(waterClockMockData))
+        const payload = JSON.stringify({
+            WaterClocks: waterClockMockData
+        })
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GenerateWaterClock", "WaterClocks")',
+            data: payload,
+            contentType: "application/json",
+            success: function (res) {
+                window.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+
+    }
+</script>

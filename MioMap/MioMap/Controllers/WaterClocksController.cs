@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MioMap;
 using MioMap.Models;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace MioMap.Controllers
 {
@@ -38,6 +39,45 @@ namespace MioMap.Controllers
             return _context.WaterClocks != null ?
                         new JsonResult(await _context.WaterClocks.ToListAsync()) :
                         Problem("Entity set 'MioMapDbContext.WaterClocks'  is null.");
+        }
+
+        public IActionResult SearchWaterClock(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                keyword = "";
+            }
+
+            return _context.WaterPiplines != null ?
+                        new JsonResult(_context.WaterClocks.ToList().Where(x => x.Title.ToLower().Contains(keyword.ToLower()))) :
+                        Problem("Entity set 'MioMapDbContext.WaterPipline'  is null.");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateWaterClock([FromBody] GenerateWCModel model)
+        {
+
+            foreach (var waterClock in model.WaterClocks)
+            {
+                if (string.IsNullOrEmpty(waterClock.InWaterClock))
+                {
+                    waterClock.InWaterClock = "";
+                }
+                if (string.IsNullOrEmpty(waterClock.OutWaterClock))
+                {
+                    waterClock.OutWaterClock = "";
+                }
+                waterClock.InfoBoxTitle = waterClock.Title;
+                waterClock.InfoBoxDescription = waterClock.Description;
+                var isExist = _context.WaterClocks.ToList().FirstOrDefault(x => x.Title.ToLower() == waterClock.Title.ToLower());
+
+                if (isExist is null) _context.Add(waterClock);
+
+            }
+            await _context.SaveChangesAsync();
+            Response.StatusCode = StatusCodes.Status200OK;
+            return new JsonResult("");
         }
 
         // GET: WaterClocks/Details/5
