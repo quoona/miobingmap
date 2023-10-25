@@ -49,7 +49,7 @@
         border: 1px solid gray;
         border-radius: 5px 0 0 5px;
         padding: 20px;
-        height: 100vh;
+        height: 90vh;
         width: 400px;
         display: flex;
         background-color: whitesmoke;
@@ -61,6 +61,7 @@
         transform: translateX(100%);
         transition: transform 0.3s linear;
         margin-left: 200px;
+        overflow: scroll;
         z-index: 9999;
     }
 
@@ -922,7 +923,7 @@
 
     // Find Route
     function directionsUpdated(e) {
-        dataLayer.clear();
+        dataLayer?.clear();
 
         //Get the current route.
         var currentRoute = directionsManager.getCurrentRoute();
@@ -1087,6 +1088,16 @@
 
                 const _safeMessage = `Van an toàn: ${stringSafeWaterClock}`;
                 const _infectedMessage = `Van ảnh hưởng:  ${stringInfectedWaterClock}`;
+
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-left",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
 
                 toastr.info(_safeMessage)
                 toastr.warning(_infectedMessage)

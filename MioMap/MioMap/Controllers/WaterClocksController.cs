@@ -102,7 +102,8 @@ namespace MioMap.Controllers
         public IActionResult Create()
         {
             ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
-            var model = new WaterClock();
+            var model = new CRUDWaterClockModel();
+            model.WaterClockStatus = 0;
             return View(model);
         }
 
@@ -111,16 +112,32 @@ namespace MioMap.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(WaterClock waterClock)
+        public async Task<IActionResult> Create(CRUDWaterClockModel model)
         {
-            if (string.IsNullOrEmpty(waterClock.InWaterClock))
+
+            var inWaterClockIds = "";
+            var outWaterClockIds = "";
+            if (model.InWaterClock.Any())
             {
-                waterClock.InWaterClock = "";
+                inWaterClockIds = string.Join(",", model.InWaterClock);
             }
-            if (string.IsNullOrEmpty(waterClock.OutWaterClock))
+            if (model.OutWaterClock.Any())
             {
-                waterClock.OutWaterClock = "";
+                outWaterClockIds = string.Join(",", model.OutWaterClock);
             }
+
+            WaterClock waterClock = new()
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Address = model.Address,
+                Lat = model.Lat,
+                Long = model.Long,
+                InfoBoxDescription = model.Description,
+                InfoBoxTitle = model.Title,
+                InWaterClock = inWaterClockIds,
+                OutWaterClock = outWaterClockIds
+            };
 
             ViewData["ListWaterClock"] = _context.WaterClocks.Where(x => x.Id != 0).ToList();
 
@@ -145,7 +162,32 @@ namespace MioMap.Controllers
             {
                 return NotFound();
             }
-            return View(waterClock);
+
+            List<int> inWaterClock = new();
+            List<int> outWaterClock = new();
+            if (!string.IsNullOrEmpty(waterClock.InWaterClock))
+            {
+                inWaterClock = waterClock.InWaterClock.Split(',').Select(int.Parse).ToList();
+            }
+            if (!string.IsNullOrEmpty(waterClock.OutWaterClock))
+            {
+                outWaterClock = waterClock.OutWaterClock.Split(',').Select(int.Parse).ToList();
+            }
+
+            CRUDWaterClockModel model = new()
+            {
+                Id = waterClock.Id,
+                Title = waterClock.Title,
+                Description = waterClock.Description,
+                Address = waterClock.Address,
+                Lat = waterClock.Lat,
+                Long = waterClock.Long,
+                InWaterClock = inWaterClock,
+                OutWaterClock = outWaterClock,
+                WaterClockStatus = waterClock.WaterClockStatus,
+            };
+
+            return View(model);
         }
 
         // POST: WaterClocks/Edit/5

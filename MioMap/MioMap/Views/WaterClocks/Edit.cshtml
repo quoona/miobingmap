@@ -1,109 +1,449 @@
-﻿@model MioMap.Models.WaterClock
+﻿@model MioMap.Models.CRUDWaterClockModel
 
 @{
     ViewData["Title"] = "Edit";
+
+    var waterClocks = ViewData["ListWaterClock"] as List<WaterClock>;
+    var options = waterClocks.Select(wc => new SelectListItem { Value = wc.Id.ToString(), Text = wc.Title }).ToList();
+    List<SelectListItem> statusWaterClocks = new()
+    {
+         new SelectListItem() { Value = "0", Text = "Chưa cập nhật" } ,
+        new SelectListItem() { Value = "1", Text = "Ổn định" } ,
+        new SelectListItem() { Value = "2", Text = "Đang sửa chữa" } ,
+        new SelectListItem() { Value = "3", Text = "Bảo trì" } ,
+        new SelectListItem() { Value = "4", Text = "Hỏng" } ,
+    };
 }
 
-<h1>Edit</h1>
 
-<h4>WaterClock</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Lat" class="control-label"></label>
-                <input asp-for="Lat" class="form-control" />
-                <span asp-validation-for="Lat" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Long" class="control-label"></label>
-                <input asp-for="Long" class="form-control" />
-                <span asp-validation-for="Long" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InfoBoxTitle" class="control-label"></label>
-                <input asp-for="InfoBoxTitle" class="form-control" />
-                <span asp-validation-for="InfoBoxTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InfoBoxDescription" class="control-label"></label>
-                <input asp-for="InfoBoxDescription" class="form-control" />
-                <span asp-validation-for="InfoBoxDescription" class="text-danger"></span>
-            </div>
+<style>
+    .panel {
+        margin-bottom: 10px;
+    }
 
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            @{
-                var waterClocks = ViewData["ListWaterClock"] as List<WaterClock>;
-                var options = waterClocks.Select(wc => new SelectListItem { Value = wc.Id.ToString(), Text = wc.Title }).ToList();
+    input,
+    input[type="radio"] + label,
+    input[type="checkbox"] + label:before {
+        width: 100%;
+        padding: 1em;
+        line-height: 1.4;
+        background-color: #f9f9f9;
+        border: 1px solid #e5e5e5;
+        caret-color: black;
+        border-radius: 3px;
+        -webkit-transition: 0.35s ease-in-out;
+        -moz-transition: 0.35s ease-in-out;
+        -o-transition: 0.35s ease-in-out;
+        transition: 0.35s ease-in-out;
+        transition: all 0.35s ease-in-out;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    input:focus {
+        outline: 0;
+        border-color: #bd8200;
+    }
+
+        input:focus + .input-icon i {
+            color: #f0a500;
+        }
+
+        input:focus + .input-icon:after {
+            border-right-color: #f0a500;
+        }
+
+    input[type="radio"] {
+        display: none;
+    }
+
+        input[type="radio"] + label,
+        select {
+            /*                 display: inline-block;
+                                                    width: 50%;
+                                                    text-align: center;
+                                                    float: left;
+                                                    border-radius: 0; */
+        }
+
+            input[type="radio"] + label:first-of-type {
+                border-top-left-radius: 3px;
+                border-bottom-left-radius: 3px;
             }
 
-            <div class="form-group">
-                <label asp-for="InWaterClock" class="control-label"></label>
-                <select id="inWaterClockSelect" class="form-control" multiple>
-                    @foreach (var option in options)
-                    {
-                        <option value="@option.Value">@option.Text</option>
-                    }
-                </select>
-                <input type="hidden" asp-for="InWaterClock" id="inWaterClockHidden" />
-            </div>
+            input[type="radio"] + label:last-of-type {
+                border-top-right-radius: 3px;
+                border-bottom-right-radius: 3px;
+            }
 
-            <div class="form-group">
-                <label asp-for="OutWaterClock" class="control-label"></label>
-                <select id="outWaterClockSelect" class="form-control" multiple>
-                    @foreach (var option in options)
-                    {
-                        <option value="@option.Value">@option.Text</option>
-                    }
-                </select>
-                <input type="hidden" asp-for="OutWaterClock" id="outWaterClockHidden" />
-            </div>
-            <div class="form-group">
-                <label asp-for="WaterClockStatus" class="control-label"></label>
-                <input asp-for="WaterClockStatus" class="form-control" />
-                <span asp-validation-for="WaterClockStatus" class="text-danger"></span>
-            </div>
+            input[type="radio"] + label i {
+                padding-right: 0.4em;
+            }
 
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+            input[type="radio"]:checked + label,
+            input:checked + label:before,
+            select:focus,
+            select:active {
+                /*  background-color: #f0a500;
+                                                        color: #fff;
+                                                        border-color: #bd8200; */
+            }
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    input[type="checkbox"] {
+        display: none;
+    }
+
+        input[type="checkbox"] + label {
+            position: relative;
+            display: block;
+            padding-left: 1.6em;
+        }
+
+            input[type="checkbox"] + label:before {
+                position: absolute;
+                top: 0.2em;
+                left: 0;
+                display: block;
+                width: 1em;
+                height: 1em;
+                padding: 0;
+                content: "";
+            }
+
+            input[type="checkbox"] + label:after {
+                position: absolute;
+                top: 0.45em;
+                left: 0.2em;
+                font-size: 0.8em;
+                color: #fff;
+                opacity: 0;
+                font-family: FontAwesome;
+                content: "\f00c";
+            }
+
+    input:checked + label:after {
+        opacity: 1;
+    }
+
+    select {
+        height: 3.4em;
+        line-height: 2;
+    }
+
+        select:first-of-type {
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+        }
+
+        select:last-of-type {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        select:focus,
+        select:active {
+            outline: 0;
+        }
+
+        select option {
+            background-color: #f0a500;
+            color: #fff;
+        }
+
+    .input-group {
+        margin-bottom: 1em;
+        padding: 0;
+        zoom: 1;
+    }
+
+        .input-group:before,
+        .input-group:after {
+            content: "";
+            display: table;
+        }
+
+        .input-group:after {
+            clear: both;
+        }
+
+    .input-group-icon {
+        position: relative;
+    }
+
+        .input-group-icon input {
+            padding-left: 4.4em;
+        }
+
+        .input-group-icon .input-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3.4em;
+            height: 3.4em;
+            line-height: 3.4em;
+            text-align: center;
+            pointer-events: none;
+        }
+
+            .input-group-icon .input-icon:after {
+                position: absolute;
+                top: 0.6em;
+                bottom: 0.6em;
+                left: 3.4em;
+                display: block;
+                border-right: 1px solid #e5e5e5;
+                content: "";
+                -webkit-transition: 0.35s ease-in-out;
+                -moz-transition: 0.35s ease-in-out;
+                -o-transition: 0.35s ease-in-out;
+                transition: 0.35s ease-in-out;
+                transition: all 0.35s ease-in-out;
+            }
+
+            .input-group-icon .input-icon i {
+                -webkit-transition: 0.35s ease-in-out;
+                -moz-transition: 0.35s ease-in-out;
+                -o-transition: 0.35s ease-in-out;
+                transition: 0.35s ease-in-out;
+                transition: all 0.35s ease-in-out;
+            }
+
+    .row {
+        zoom: 1;
+    }
+
+        .row:before,
+        .row:after {
+            content: "";
+            display: table;
+        }
+
+        .row:after {
+            clear: both;
+        }
+
+    .col-half {
+        padding-right: 10px;
+        float: left;
+        width: 50%;
+    }
+
+        .col-half:last-of-type {
+            padding-right: 0;
+        }
+
+    .col-third {
+        padding-right: 10px;
+        float: left;
+        width: 33.33333333%;
+    }
+
+        .col-third:last-of-type {
+            padding-right: 0;
+        }
+
+
+    /* SELECT */
+
+    select
+    fieldset {
+        /* border: none; */
+        display: flex !important;
+        align-items: center;
+        user-select: none;
+    }
+
+    fieldset > label {
+        display: inline-block;
+        width: 250px;
+        font-weight: bold;
+        vertical-align: top;
+        font-size: 1rem;
+        line-height: 28px;
+    }
+
+        fieldset > label::after {
+            content: ":";
+        }
+
+    select,
+    details {
+        display: inline-block;
+        width: 450px;
+        background-color: white;
+        cursor: pointer;
+        border: 1px solid gray;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    select,
+    summary {
+        border: 1px solid var(--lt-gray);
+        border-collapse: collapse;
+        border-radius: 4px;
+        padding: 4px;
+        width: 250px;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    details[open] > summary::marker {
+        color: var(--blue);
+    }
+
+    select:focus,
+    summary:focus,
+    summary:active {
+        box-shadow: 0 0 5px 1px var(--blue);
+    }
+
+    .my-select ul {
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        margin-top: 2px;
+        border: 1px solid var(--dk-gray);
+        box-shadow: 0 0 5px 1px var(--lt-gray);
+    }
+
+    .my-select li {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        .my-select li > label {
+            padding: 5px;
+            cursor: pointer;
+            display: inline-block;
+            width: 100%;
+        }
+
+            .my-select li > label:hover,
+            .my-select li > label:has(input:checked),
+            .my-select li > label:has(input[type="radio"]:checked) {
+                background-color: #1d4ed8;
+                color: white;
+            }
+
+</style>
+
+
+<div class="container">
+    <form asp-action="Create">
+        <div class="row">
+            <h4>Điều chỉnh Van (Đồng hồ) nước</h4>
+            <input asp-for="Id" type="number" hidden />
+            <div class="panel">
+                <label asp-for="Lat">Latitude <span class="text-danger">*</span></label>
+                <div class="input-group input-group-icon">
+                    <input asp-for="Lat" type="number" placeholder="VD: 10.742932117315178" required />
+                    <span asp-validation-for="Lat" class="text-danger"></span>
+                    <div class="input-icon"><i class="fa fa-map-marker"></i></div>
+                </div>
+            </div>
+            <div class="panel">
+                <label asp-for="Long">Longitude <span class="text-danger">*</span></label>
+                <div class="input-group input-group-icon">
+                    <input asp-for="Long" type="number" placeholder="VD: 106.69775233524817" required />
+                    <span asp-validation-for="Long" class="text-danger"></span>
+                    <div class="input-icon"><i class="fa fa-map-marker"></i></div>
+                </div>
+            </div>
+            <div class="panel">
+                <label asp-for="Title">Tên Van (Đồng hồ) <span class="text-danger">*</span></label>
+                <div class="input-group input-group-icon">
+                    <input asp-for="Title" type="text" placeholder="Tên van..." />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                    <div class="input-icon"><i class="fa fa-info"></i></div>
+                </div>
+            </div>
+            <div class="panel">
+                <label asp-for="Description">Mô tả (Ghi chú)</label>
+                <div class="input-group input-group-icon">
+                    <input asp-for="Description" type="text" placeholder="Mô tả..." />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                    <div class="input-icon"><i class="fa fa-info"></i></div>
+                </div>
+            </div>
+            <div class="panel">
+                <label asp-for="Address">Địa chỉ</label>
+                <div class="input-group input-group-icon">
+                    <input asp-for="Address" type="text" placeholder="Địa chỉ" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                    <div class="input-icon"><i class="fa fa-info"></i></div>
+                </div>
+            </div>
+            <div class="panel">
+                <fieldset class="my-select">
+                    <label>Trạng thái Van (Đồng hồ) nước</label>
+                    <details>
+                        <summary>Click để chọn</summary>
+                        <ul>
+                            @foreach (var item in statusWaterClocks)
+                            {
+                                <li>
+                                    <label>
+                                        <input type="radio" name="WaterClockStatus" value="@item.Value" checked="@(Model.WaterClockStatus == Int32.Parse(item.Value))" />
+                                        @item.Text
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+                    </details>
+                </fieldset>
+            </div>
+            <div class="panel">
+                <fieldset class="my-select">
+                    <label>Van (Đồng hồ) nước vào</label>
+                    <details>
+                        <summary>Click để chọn</summary>
+                        <ul>
+                            @foreach (var item in options)
+                            {
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="InWaterClock" value="@item.Value" checked="@(Model.InWaterClock?.Contains(Int32.Parse(item.Value)) ?? false)" />
+                                        @item.Text
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+                    </details>
+                </fieldset>
+            </div>
+            <div class="panel">
+                <fieldset class="my-select">
+                    <label>Van (Đồng hồ) nước ra</label>
+                    <details>
+                        <summary>Click để chọn</summary>
+                        <ul>
+                            @foreach (var item in options)
+                            {
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="OutWaterClock" value="@item.Value" checked="@(Model.OutWaterClock?.Contains(Int32.Parse(item.Value)) ?? false)" />
+                                        @item.Text
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+                    </details>
+                </fieldset>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-light col-6" asp-action="Index">Quay về</a>
+                <button class="btn btn-primary  col-6" type="submit">Lưu</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('form').on('submit', function () {
-                var inWaterClockIds = $('#inWaterClockSelect').val().join(',');
-                $('#inWaterClockHidden').val(inWaterClockIds);
-
-                var outWaterClockIds = $('#outWaterClockSelect').val().join(',');
-                $('#outWaterClockHidden').val(outWaterClockIds);
-            });
-        });
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
